@@ -1,3 +1,5 @@
+// @flow
+
 import { StyleSheet } from 'react-native'
 import { ApplicationStyles, Metrics, Colors } from '../../Themes/'
 
@@ -5,8 +7,8 @@ export default StyleSheet.create({
   ...ApplicationStyles.screen,
   container: {
     flex: 1,
-    marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.background
+    // marginTop: Metrics.navBarHeight,
+    backgroundColor: Colors.cloud
   },
   row: {
     flex: 1,
@@ -19,12 +21,11 @@ export default StyleSheet.create({
     alignSelf: 'center',
     color: Colors.snow,
     textAlign: 'center',
-    marginVertical: Metrics.smallMargin
+    marginBottom: Metrics.smallMargin
   },
   label: {
     textAlign: 'center',
-    color: Colors.snow,
-    marginBottom: Metrics.smallMargin
+    color: Colors.snow
   },
   listContent: {
     marginTop: Metrics.baseMargin

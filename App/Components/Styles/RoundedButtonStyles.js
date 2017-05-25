@@ -7,13 +7,28 @@ export default StyleSheet.create({
     borderRadius: 5,
     marginHorizontal: Metrics.section,
     marginVertical: Metrics.baseMargin,
-    backgroundColor: Colors.fire,
+    backgroundColor: Colors.snow,
     justifyContent: 'center'
   },
+  disabledButton: {
+    height: 45,
+    borderRadius: 5,
+    marginHorizontal: Metrics.section,
+    marginVertical: Metrics.baseMargin,
+    justifyContent: 'center',
+    backgroundColor: Colors.ember
+  },
   buttonText: {
-    color: Colors.snow,
+    color: Colors.coal,
     textAlign: 'center',
     fontWeight: 'bold',
+    fontSize: Fonts.size.medium,
+    marginVertical: Metrics.baseMargin
+  },
+  disabledButtonText: {
+    color: Colors.snow,
+    textAlign: 'center',
+    fontStyle: 'italic',
     fontSize: Fonts.size.medium,
     marginVertical: Metrics.baseMargin
   }

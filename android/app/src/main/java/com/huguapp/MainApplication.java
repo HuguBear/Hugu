@@ -12,6 +12,11 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import com.huguapp.utility.UtilityPackage;
+import com.huguapp.voiceplayer.VoicePlayerPackage;
+import com.huguapp.voicerecorder.VoiceRecorderPackage;
+import com.rnfs.RNFSPackage;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +35,11 @@ public class MainApplication extends Application implements ReactApplication {
             new ReactNativeI18n(),
             new VectorIconsPackage(),
             new RNDeviceInfo(),
-            new ReactNativeConfigPackage()
+            new ReactNativeConfigPackage(),
+            new UtilityPackage(),
+            new RNFSPackage(),
+            new VoicePlayerPackage(),
+            new VoiceRecorderPackage()
       );
     }
   };
