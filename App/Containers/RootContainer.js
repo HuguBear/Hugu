@@ -33,7 +33,6 @@ class RootContainer extends Component {
           nextButton={<Text style={styles.nextButton}><IonIcon name='ios-arrow-forward' color='white' size={45} /></Text>}
           prevButton={<Text style={styles.prevButton}><IonIcon name='ios-arrow-back' color='white' size={45} /></Text>}
           showsButtons>
-          {/* <PresentationScreen></PresentationScreen> */}
           <BearListScreen />
           <RecordScreen />
           <AudioListScreen />
