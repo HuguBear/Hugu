@@ -1,3 +1,6 @@
+Fixing warnings: https://stackoverflow.com/questions/42707846/rn-progressbarandroid-manually-calling-react-proptypes-for-the-indeterminate
+
+
 #  HuguApp
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
