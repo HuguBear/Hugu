@@ -1,12 +1,13 @@
 /* eslint-disable no-undef */
+/* eslint-disable react/jsx-boolean-value */
 import React, { PropTypes } from 'react'
-import { View, Text, TouchableOpacity, ProgressBarAndroid, ToastAndroid, AsyncStorage } from 'react-native'
+import { View, Text, TouchableOpacity, ProgressBarAndroid, Modal, TextInput } from 'react-native'
 
 import styles from './Styles/AudioListItemStyle'
-import VoicePlayer from '../../android/app/src/main/java/com/huguapp/voiceplayer/voiceplayer.js'
-import RNFS from 'react-native-fs'
+import Sound from 'react-native-sound'
 import IonIcon from 'react-native-vector-icons/Ionicons'
-let voicePlayer = new VoicePlayer()
+import ConvertDate from '../Transforms/ConvertDate'
+import RoundedButton from '../Components/RoundedButton'
 
 export default class AudioListItem extends React.Component {
   static propTypes = {
@@ -16,77 +17,49 @@ export default class AudioListItem extends React.Component {
 
   constructor (props) {
     super(props)
-    this.audioFilesPath = RNFS.DocumentDirectoryPath + '/audio'
+
     this.state = {
       myFlexDirection: 'row',
-      showProgressBar: false,
-      name: props.audio.name
+      modalVisible: false,
+      modalAudioName: this.props.audio.fileName
     }
-    AsyncStorage.getItem(props.audio.name.split('.')[0], (err, result) => {
-      if (err) {
-        console.log(err.stack)
-      }
-      let info = JSON.parse(result)
-      if (result !== null) {
-        this.setState({
-          sent: info.sent,
-          listened: info.listened
-        })
-      }
-    })
   }
 
   componentDidMount () {
     audioListItem = this
   }
 
-  componentWillReceiveProps (newProps) {
-    if (newProps.instanceUpdated === this.state.name) {
-      this.setState({
-        sent: true
-      })
+  async playAudio (audioPath) {
+    if (this.state.recording) {
+      await this._stop()
     }
-  }
 
-  _nameToDate (name) {
-    // MMddhhmm
-    let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
-      'August', 'September', 'October', 'November', 'December']
-    return months[(name[2] + name[3] - 1)] + ' ' + (name[4] + name[5]) + ', ' + (name[6] + name[7]) + ':' + (name[8] + name[9]) + ', ' + name.substring(0, 2)
-  }
-
-  _onListItemClick () {
-    this.props.onClick(this)
-  }
-
-  _onPlayClick (audio) {
-    voicePlayer.play(audio.path)
-  }
-
-  _onDeleteClick (audio) {
-    return RNFS.unlink(audio.path)
-      // spread is a method offered by bluebird to allow for more than a
-      // single return value of a promise. If you use `then`, you will receive
-      // the values inside of an array
-      .then(() => {
-        console.log('FILE DELETED')
-        /* onChange method binded from AudioListContainer where I make
-        * <AudioListItem> */
-        ToastAndroid.show('Recording deleted', ToastAndroid.SHORT)
-        this.props.onChange()
-        /* Calling it here because react uses old components for new list */
-        // this._onListItemClick()
-        AsyncStorage.removeItem(audioListItem.state.name, (result) => {
-        // console.log(result)
-        })
-        AsyncStorage.getAllKeys((result) => {
-        // console.log(result)
-        })
+    setTimeout(() => {
+      var sound = new Sound(audioPath, '', (error) => {
+        if (error) {
+          console.log('failed to load the sound', error)
+        }
       })
-          // `unlink` will throw an error, if the item to unlink does not exist
-      .catch((err) => {
-        console.log(err.message)
-      })
+
+      setTimeout(() => {
+        sound.play((success) => {
+          if (success) {
+            console.log('successfully finished playing')
+          } else {
+            console.log('playback failed due to audio decoding errors')
+          }
+        })
+      }, 100)
+    }, 100)
+  }
+
+  setModalVisible (visible, audio) {
+    this.setState({modalVisible: visible})
+    if (audio) {
+      this.props.renameAudio({filePath: this.props.audio.filePath, newName: this.state.modalAudioName})
+    } else {
+      this.setState({modalAudioName: this.props.audio.fileName})
+    }
   }
 
   _showProgressBar () {
@@ -102,7 +75,7 @@ export default class AudioListItem extends React.Component {
   }
 
   render () {
-    let statusIcon = (this.state.sent)
+    let statusIcon = (this.props.audio.sent)
     ? (<Text style={[styles.audioStatus, {color: 'green'}]}>
       <IonIcon name='md-paw' color='green' size={30} style={{marginRight: 10}} />
       Sent
@@ -117,7 +90,7 @@ export default class AudioListItem extends React.Component {
     : (<TouchableOpacity
       style={styles.additionalButtons}
       onPress={() => {
-        this.props.setModalVisible(true, this.props.audio.path)
+        this.props.setModalVisible(true, this.props.audio.filePath)
       }}>
       <IonIcon name='md-send' style={{marginLeft: 3}} color={'white'} size={30} />
     </TouchableOpacity>)
@@ -125,13 +98,13 @@ export default class AudioListItem extends React.Component {
     return (
       <View>
         <TouchableOpacity
-          onPress={(event) => this._onListItemClick()}
-          onLongPress={(event) => this.onRenameClick(this.props.audio)}
+          onPress={(event) => this.props.onClick(this)}
+          onLongPress={(event) => this.setModalVisible(!this.state.modalVisible)}
           style={[styles.audioRow, {flexDirection: this.state.myFlexDirection}]}>
           <View style={styles.audioHeading}>
             {statusIcon}
             <Text style={styles.audioName}>
-              {this._nameToDate(this.props.audio.name)}
+              {ConvertDate(this.props.audio.fileName)}
             </Text>
           </View>
         </TouchableOpacity>
@@ -141,13 +114,13 @@ export default class AudioListItem extends React.Component {
             <View style={styles.audioExtraTopContent}>
               <TouchableOpacity
                 style={styles.additionalButtons}
-                onPress={(event) => this._onPlayClick(this.props.audio)}>
+                onPress={(event) => this.playAudio(this.props.audio.filePath)}>
                 <IonIcon name='md-play' color={'white'} size={30} />
               </TouchableOpacity>
               {sendContent}
               <TouchableOpacity
                 style={styles.additionalButtons}
-                onPressIn={(event) => this._onDeleteClick(this.props.audio)}>
+                onPressIn={(event) => this.props.deleteAudio(this.props.audio.filePath)}>
                 <IonIcon name='md-trash' color={'white'} size={30} />
               </TouchableOpacity>
             </View>
@@ -155,6 +128,32 @@ export default class AudioListItem extends React.Component {
           </View>
           : null
         }
+        <Modal
+          animationType={'slide'}
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => { this.setModalVisible(!this.state.modalVisible) }} >
+          <View style={styles.modalParent}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalTitle} >Change the name of recording!</Text>
+              <TextInput
+                autoFocus
+                style={styles.modalTextInput}
+                value={this.state.modalAudioName}
+                onChangeText={(modalAudioName) => this.setState({modalAudioName})}
+                placeholder={'Recording name'}
+              />
+              <RoundedButton
+                disabled={this.state.modalAudioName.length === 0 || this.state.modalAudioName === this.props.audio.fileName}
+                onPress={() => { this.setModalVisible(!this.state.modalVisible, {audioName: this.state.modalAudioName, audioPath: this.props.audio.filePath}) }}>
+                Rename recording
+              </RoundedButton>
+              <RoundedButton onPress={() => { this.setModalVisible(!this.state.modalVisible) }}>
+                Cancel
+              </RoundedButton>
+            </View>
+          </View>
+        </Modal>
       </View>
     )
   }

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-boolean-value */
 'use strict'
 import React from 'react'
 import {
@@ -76,11 +77,11 @@ class BearListScreen extends React.Component {
     this.setState({modalVisible: visible})
     if (bear) {
       this.props.addBearRequest(bear)
-      this.setState({
-        modalBearName: '',
-        modalBearKey: ''
-      })
     }
+    this.setState({
+      modalBearName: '',
+      modalBearKey: ''
+    })
   }
 
   render () {
@@ -99,17 +100,20 @@ class BearListScreen extends React.Component {
           pageSize={15} />
         <Modal
           animationType={'slide'}
-          transparent={false}
+          transparent={true}
           visible={this.state.modalVisible}
           onRequestClose={() => { this.setModalVisible(!this.state.modalVisible) }} >
-          <View style={{marginTop: 22}}>
-            <View>
-              <Text>Add bear!</Text>
+          <View style={styles.modalParent}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalTitle} >Add bear!</Text>
               <TextInput
+                autoFocus
+                style={styles.modalTextInput}
                 value={this.state.modalBearName}
                 onChangeText={(modalBearName) => this.setState({modalBearName})}
                 placeholder={'Bear Name'} />
               <TextInput
+                style={styles.modalTextInput}
                 value={this.state.modalBearKey}
                 onChangeText={(modalBearKey) => this.setState({modalBearKey})}
                 placeholder={'Bear Key'} />

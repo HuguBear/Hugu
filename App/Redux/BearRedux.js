@@ -3,10 +3,10 @@ import Immutable from 'seamless-immutable'
 
 const LIST_DATA = {
   registered: [
-    // {bearName: 'First Title', bearKey: 'First Description'},
+    {bearName: 'Registered', bearKey: 'QWERTYUIOP1234567891'}
   ],
   unregistered: [
-    {bearName: 'Check BearRedux', bearKey: 'Saga ready two with example'}
+    {bearName: 'Check BearRedux', bearKey: 'QWERTYUIOP1234567891'}
   ]
 }
 

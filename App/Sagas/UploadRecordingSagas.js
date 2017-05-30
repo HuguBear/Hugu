@@ -11,7 +11,7 @@
 *************************************************************/
 
 import { call, put } from 'redux-saga/effects'
-import UploadRecordingActions from '../Redux/RecordRedux'
+import RecordActions from '../Redux/RecordRedux'
 import axios from 'axios'
 
 function promisifiedFn (settings) {
@@ -33,29 +33,29 @@ function promisifiedFn (settings) {
 }
 
 export function * getUploadRecording (action) {
-  const { filepath, bearKey } = action
+  const { filePath, bearKey } = action
 
   const settings = {
-    uri: 'file://' + filepath,
+    uri: 'file://' + filePath,
     uploadUrl: 'http://104.129.5.43/postaudio',
-    fileName: filepath.split('/').pop(), // default to 'yyyyMMddhhmmss.xxx'
+    fileName: filePath.split('/').pop(), // default to 'yyyyMMddhhmmss.xxx'
     contentType: 'application/octet-stream', // default to 'application/octet-stream'
     bear_key: bearKey
   }
 
   const response = yield call(promisifiedFn, settings)
   if (typeof (response) === 'undefined') {
-    yield put(UploadRecordingActions.uploadFailure('No response'))
+    yield put(RecordActions.uploadFailure('No response'))
     return
   }
 
   if (response.headers.uploadstatus === 'OK') {
-    yield put(UploadRecordingActions.uploadSuccess(response.data, settings.fileName))
+    yield put(RecordActions.uploadSuccess(filePath))
   } else {
     if (response.data) {
-      yield put(UploadRecordingActions.uploadFailure(response.data))
+      yield put(RecordActions.uploadFailure(response.data))
     } else {
-      yield put(UploadRecordingActions.uploadFailure(response))
+      yield put(RecordActions.uploadFailure(response))
     }
   }
 }

@@ -11,9 +11,7 @@ import { RecordTypes } from '../Redux/RecordRedux'
 
 import { startup } from './StartupSagas'
 import { openScreen } from './OpenScreenSagas'
-import { createRecordingInstance } from './CreateRecordingSagas'
 import { getUploadRecording } from './UploadRecordingSagas'
-import { setListened } from './AudioStatusSagas'
 // import { testSagaBears } from './BearSagas'
 
 /* ------------- Connect Types To Sagas ------------- */
@@ -25,8 +23,6 @@ export default function * root () {
     takeLatest(OpenScreenTypes.OPEN_SCREEN, openScreen),
 
     // some sagas receive extra parameters in addition to an action
-    takeLatest(RecordTypes.UPLOAD_REQUEST, getUploadRecording),
-    takeLatest(RecordTypes.UPLOAD_SUCCESS, setListened),
-    takeLatest(RecordTypes.RECORD_SUCCESS, createRecordingInstance)
+    takeLatest(RecordTypes.UPLOAD_REQUEST, getUploadRecording)
   ]
 }
