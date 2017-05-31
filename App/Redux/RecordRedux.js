@@ -6,6 +6,7 @@ const LIST_DATA = [
    /* {
       filePath: 'filePath',
       fileName: filePath.split('.')[0],
+      isUploading: false,
       sent: false,
       received: false,
       listened: false
@@ -33,9 +34,9 @@ export default Creators
 export const INITIAL_STATE = Immutable({
   audioFiles: LIST_DATA,
   isRecording: false,
-  isUploading: false,
   finishedRecording: false,
-  sent: false,
+  lastRecordedFilePath: null,
+  sendingFromRecordScreen: 0,
   error: null
 
 })
@@ -44,55 +45,101 @@ export const INITIAL_STATE = Immutable({
 export const recordStart = (state: Object) => {
   return state.merge({
     isRecording: true,
-    finishedRecording: false
-
+    finishedRecording: false,
+    sendingFromRecordScreen: 0,
+    error: null
   })
 }
 
 export const recordSuccess = (state: Object, { filePath }: Object) => {
-  const audioFiles = [ ...state.audioFiles, {filePath: filePath, fileName: filePath.split('audio/')[1].split('.')[0], sent: false, received: false, listened: false} ]
+  const audioFiles = [ ...state.audioFiles, {
+    filePath: filePath,
+    fileName: filePath.split('audio/')[1].split('.')[0],
+    isUploading: false,
+    sent: false,
+    received: false,
+    listened: false
+  }]
   return state.merge({
     audioFiles,
     isRecording: false,
-    finishedRecording: true
+    finishedRecording: true,
+    lastRecordedFilePath: filePath
   })
 }
 
 export const recordFailure = (state, action) => {
-  return state.merge({isRecording: false, finishedRecording: false, error: action.error})
+  return state.merge({
+    isRecording: false,
+    finishedRecording: false,
+    error: action.error
+  })
 }
 
 export const renameAudio = (state: Object, { bundle }: Object) => {
   const { filePath, newName } = bundle
-  const audioFiles = state.audioFiles.map(audio => audio.filePath === filePath ? {filePath: audio.filePath, fileName: newName, sent: audio.sent, received: audio.received, listened: audio.listened} : audio)
+  const audioFiles = state.audioFiles.map(audio => audio.filePath === filePath ? {
+    filePath: audio.filePath,
+    fileName: newName,
+    isUploading: audio.isUploading,
+    sent: audio.sent,
+    received: audio.received,
+    listened: audio.listened
+  } : audio)
   return state.merge({audioFiles})
 }
 
 export const deleteAudio = (state: Object, { filePath }: Object) => {
   const audioFiles = state.audioFiles.filter(audio =>
-    audio.filePath !== filePath, // MAYBE DONT NEEX THAT FLAG
+    audio.filePath !== filePath,
     RNFS.unlink(filePath)
   )
+  var lastRecordedFilePath = (state.lastRecordedFilePath === filePath) ? null : state.lastRecordedFilePath
+  var sendingFromRecordScreen = (state.lastRecordedFilePath === filePath) ? 0 : state.sendingFromRecordScreen
   return state.merge({
-    audioFiles
+    audioFiles,
+    lastRecordedFilePath,
+    sendingFromRecordScreen,
+    error: null
   })
 }
 
-export const uploadRequest = (state, action) => {
-  return state.merge({isUploading: true})
+export const uploadRequest = (state: Object, { filePath }: Object) => {
+  const audioFiles = state.audioFiles.map(audio =>
+    audio.filePath === filePath ? {
+      filePath: audio.filePath,
+      fileName: audio.fileName,
+      isUploading: true,
+      sent: audio.sent,
+      received: audio.received,
+      listened: audio.listened
+    } : audio)
+  var sendingFromRecordScreen = (state.lastRecordedFilePath === filePath) ? 1 : state.sendingFromRecordScreen
+  return state.merge({
+    audioFiles,
+    sendingFromRecordScreen,
+    error: null
+  })
 }
 
 export const uploadSuccess = (state: Object, { filePath }: Object) => {
-  const audioFiles = state.audioFiles.map(audio => audio.filePath === filePath ? {filePath: audio.filePath, fileName: audio.fileName, sent: true, received: audio.received, listened: audio.listened} : audio)
+  const audioFiles = state.audioFiles.map(audio => audio.filePath === filePath ? {filePath: audio.filePath, fileName: audio.fileName, isUploading: false, sent: true, received: audio.received, listened: audio.listened} : audio)
+  var sendingFromRecordScreen = (state.sendingFromRecordScreen === 1) ? 2 : 0
   return state.merge({
     audioFiles,
-    currentState: 'finishedUploading',
-    isUploading: false
+    sendingFromRecordScreen,
+    error: 'SUCCESSFUL'
   })
 }
 
 export const uploadFailure = (state, action) => {
-  return state.merge({currentState: 'finishedUploadingWithError', isUploading: false, error: action.error})
+  const { error } = action
+  const audioFiles = state.audioFiles.map(audio => audio.filePath === error.filePath ? {filePath: audio.filePath, fileName: audio.fileName, isUploading: false, sent: audio.sent, received: audio.received, listened: audio.listened} : audio)
+  return state.merge({
+    audioFiles,
+    sendingFromRecordScreen: -1,
+    error: 'UNSUCCESSFUL'
+  })
 }
 
 /* ------------- Hookup Reducers To Types ------------- */

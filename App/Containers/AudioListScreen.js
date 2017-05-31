@@ -29,9 +29,9 @@ class AudioListScreen extends React.Component {
     audiolist = this
     this.state = {
       bearModalVisible: false,
-      sent: 0,
       audioDataSource: ds.cloneWithRows(audioData),
-      chosenAudioPath: ''
+      chosenAudioPath: '',
+      startup: true
     }
 
     this.setModalVisible = this.setModalVisible.bind(this)
@@ -44,7 +44,6 @@ class AudioListScreen extends React.Component {
         onClick={audiolist._onItemClick}
         renameAudio={audiolist.props.renameAudio}
         setModalVisible={audiolist.setModalVisible}
-        isUploading={audiolist.props.isUploading}
         deleteAudio={audiolist.props.deleteAudio}
       />
     )
@@ -54,14 +53,17 @@ class AudioListScreen extends React.Component {
   }
 
   componentWillReceiveProps (newProps) {
-    if (newProps.currentState === 'finishedUploading') {
+    if (newProps.error === 'SUCCESSFUL' && !this.state.startup) {
       ToastAndroid.show('Upload SUCCESSFUL', ToastAndroid.LONG)
     }
-    if (newProps.currentState === 'finishedUploadingWithError') {
+    if (newProps.error === 'UNSUCCESSFUL' && !this.state.startup) {
       ToastAndroid.show('Upload FAILED', ToastAndroid.LONG)
     }
     if (newProps.audioFiles !== this.props.audioFiles) {
       audiolist._getAudioFromLocal(newProps.audioFiles)
+    }
+    if (this.state.startup) {
+      this.setState({startup: false})
     }
   }
 
@@ -145,10 +147,10 @@ class AudioListScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    isUploading: state.recording.isUploading,
-    finishedRecording: state.recording.finishedRecording,
     bearList: state.bear.results,
-    audioFiles: state.recording.audioFiles
+    audioFiles: state.recording.audioFiles,
+    finishedRecording: state.recording.finishedRecording,
+    error: state.recording.error
   }
 }
 

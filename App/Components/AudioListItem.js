@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/jsx-boolean-value */
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { View, Text, TouchableOpacity, ProgressBarAndroid, Modal, TextInput } from 'react-native'
 
 import styles from './Styles/AudioListItemStyle'
@@ -10,10 +10,6 @@ import ConvertDate from '../Transforms/ConvertDate'
 import RoundedButton from '../Components/RoundedButton'
 
 export default class AudioListItem extends React.Component {
-  static propTypes = {
-    isUploading: PropTypes.bool,
-    currentState: PropTypes.string
-  }
 
   constructor (props) {
     super(props)
@@ -63,7 +59,7 @@ export default class AudioListItem extends React.Component {
   }
 
   _showProgressBar () {
-    if (this.props.isUploading) {
+    if (this.props.audio.isUploading) {
       return (
         <View style={styles.audioExtraBottomContent}>
           <Text style={styles.uploadStatusText}> Sending... </Text>
@@ -85,7 +81,7 @@ export default class AudioListItem extends React.Component {
       NotSent
     </Text>)
 
-    let sendContent = (this.props.isUploading)
+    let sendContent = (this.props.audio.isUploading)
     ? null
     : (<TouchableOpacity
       style={styles.additionalButtons}

@@ -60,5 +60,25 @@ export default StyleSheet.create({
     textAlign: 'center',
     color: Colors.ricePaper,
     fontSize: 30
+  },
+  sendingText: {
+    position: 'absolute',
+    left: 15,
+    top: 1,
+    color: Colors.ricePaper,
+    fontSize: 30
+  },
+  sendingIndicator: {
+    position: 'absolute',
+    top: 4,
+    right: 5
+  },
+  sentButton: {
+    alignSelf: 'center',
+    margin: 5,
+    height: 45,
+    width: Metrics.screenWidth / 2,
+    backgroundColor: Colors.seaweed,
+    borderRadius: 23
   }
 })

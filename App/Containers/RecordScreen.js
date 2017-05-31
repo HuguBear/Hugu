@@ -1,13 +1,14 @@
+/* eslint-disable react/jsx-boolean-value */
 import React, {Component} from 'react'
 
 import {
   Text,
   View,
-  TouchableHighlight,
   Platform,
   PermissionsAndroid,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native'
 
 import Sound from 'react-native-sound'
@@ -18,6 +19,7 @@ import RNFS from 'react-native-fs'
 import { connect } from 'react-redux'
 import RecordActions from '../Redux/RecordRedux'
 import Images from '../Themes/Images'
+import ChooseBearModal from '../Components/ChooseBearModal'
 import styles from './Styles/RecordScreenStyle'
 
 class RecordScreen extends Component {
@@ -27,7 +29,9 @@ class RecordScreen extends Component {
     recording: false,
     finished: false,
     audioPath: AudioUtils.DocumentDirectoryPath + '/audio/' + new Date().toJSON().slice(2, 19).replace(/:/g, '').replace(/T/g, '').replace(/-/g, '') + '.aac',
-    hasPermission: undefined
+    hasPermission: undefined,
+    bearModalVisible: false,
+    recordedAudioPath: ''
   }
 
   prepareRecordingPath (audioPath) {
@@ -63,6 +67,12 @@ class RecordScreen extends Component {
     })
   }
 
+  componentWillReceiveProps (newProps) {
+    if (newProps.lastRecordedFilePath === null) {
+      this.setState({currentTime: 0})
+    }
+  }
+
   _checkPermission () {
     if (Platform.OS !== 'android') {
       return Promise.resolve(true)
@@ -80,16 +90,32 @@ class RecordScreen extends Component {
       })
   }
 
-  _renderButton (title, onPress, active) {
-    var style = (active) ? styles.activeButtonText : styles.buttonText
-
-    return (
-      <TouchableHighlight style={styles.button} onPress={onPress}>
-        <Text style={style}>
-          {title}
-        </Text>
-      </TouchableHighlight>
-    )
+  renderSendingButton (sendingInfo) {
+    if (sendingInfo === 2) {
+      return (
+        <TouchableOpacity style={styles.sentButton} onPress={() => { console.warn('Already sent') }}>
+          <View>
+            <Text style={styles.buttonText}>Sent <Icon name='paw' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+          </View>
+        </TouchableOpacity>
+      )
+    } else if (sendingInfo === 1) {
+      return (
+        <TouchableOpacity style={styles.button}>
+          <View>
+            <Text style={styles.sendingText}>Sending</Text><ActivityIndicator animating={true} style={styles.sendingIndicator} color={'rgba(255,255,255, 0.75)'} size='large' />
+          </View>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <TouchableOpacity style={styles.button} onPress={() => { this.setModalVisible(!this.state.bearModalVisible) }}>
+          <View>
+            <Text style={styles.buttonText}>Send <Icon name='send' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+          </View>
+        </TouchableOpacity>
+      )
+    }
   }
 
   async _stop () {
@@ -173,13 +199,13 @@ class RecordScreen extends Component {
   }
 
   _finishRecording (didSucceed, filePath) {
-    this.setState({ finished: didSucceed })
+    this.setState({ finished: didSucceed, recordedAudioPath: filePath })
     console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`)
     console.log(AudioUtils.DocumentDirectoryPath)
   }
 
-  _send () {
-    console.warn('lul')
+  setModalVisible (visible) {
+    this.setState({bearModalVisible: visible})
   }
 
   render () {
@@ -197,22 +223,24 @@ class RecordScreen extends Component {
                 </TouchableOpacity>
               </View>
             </View>
-            {(this.state.finished && !this.state.recording) &&
+            {(this.state.finished && !this.state.recording && this.props.lastRecordedFilePath !== null) &&
               <View>
                 <TouchableOpacity style={styles.button} onPress={() => { this._play() }}>
                   <View>
                     <Text style={styles.buttonText}>Play <Icon name='play' size={20} color='rgba(255,255,255, 0.75)' /></Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => { this._send() }}>
-                  <View>
-                    <Text style={styles.buttonText}>Send <Icon name='send' size={20} color='rgba(255,255,255, 0.75)' /></Text>
-                  </View>
-                </TouchableOpacity>
+                {this.renderSendingButton(this.props.sendingFromRecordScreen)}
               </View>
             }
           </View>
         </Image>
+        <ChooseBearModal
+          modalVisible={this.state.bearModalVisible}
+          bearList={this.props.bearList}
+          uploadRequest={this.props.uploadRequest}
+          chosenAudioPath={this.state.recordedAudioPath}
+          setModalVisible={this.setModalVisible.bind(this)} />
       </View>
     )
   }
@@ -220,6 +248,9 @@ class RecordScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    bearList: state.bear.results,
+    lastRecordedFilePath: state.recording.lastRecordedFilePath,
+    sendingFromRecordScreen: state.recording.sendingFromRecordScreen
   }
 }
 
@@ -227,7 +258,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     recordStart: () => dispatch(RecordActions.recordStart()),
     recordSuccess: (filePath) => dispatch(RecordActions.recordSuccess(filePath)),
-    recordFailure: (error) => dispatch(RecordActions.recordFailure(error))
+    recordFailure: (error) => dispatch(RecordActions.recordFailure(error)),
+    uploadRequest: (filePath, bearKey) => dispatch(RecordActions.uploadRequest(filePath, bearKey))
   }
 }
 

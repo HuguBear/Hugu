@@ -1,4 +1,4 @@
-import { takeLatest } from 'redux-saga/effects'
+import { takeLatest, takeEvery } from 'redux-saga/effects'
 
 /* ------------- Types ------------- */
 
@@ -23,6 +23,6 @@ export default function * root () {
     takeLatest(OpenScreenTypes.OPEN_SCREEN, openScreen),
 
     // some sagas receive extra parameters in addition to an action
-    takeLatest(RecordTypes.UPLOAD_REQUEST, getUploadRecording)
+    takeEvery(RecordTypes.UPLOAD_REQUEST, getUploadRecording)
   ]
 }

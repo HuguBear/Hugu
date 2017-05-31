@@ -53,9 +53,9 @@ export function * getUploadRecording (action) {
     yield put(RecordActions.uploadSuccess(filePath))
   } else {
     if (response.data) {
-      yield put(RecordActions.uploadFailure(response.data))
+      yield put(RecordActions.uploadFailure({error: response.data, filePath: filePath}))
     } else {
-      yield put(RecordActions.uploadFailure(response))
+      yield put(RecordActions.uploadFailure({error: response, filePath: filePath}))
     }
   }
 }
