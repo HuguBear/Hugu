@@ -26,10 +26,6 @@ export default class AudioListItem extends React.Component {
   }
 
   async playAudio (audioPath) {
-    if (this.state.recording) {
-      await this._stop()
-    }
-
     setTimeout(() => {
       var sound = new Sound(audioPath, '', (error) => {
         if (error) {

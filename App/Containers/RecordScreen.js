@@ -30,8 +30,7 @@ class RecordScreen extends Component {
     finished: false,
     audioPath: AudioUtils.DocumentDirectoryPath + '/audio/' + new Date().toJSON().slice(2, 19).replace(/:/g, '').replace(/T/g, '').replace(/-/g, '') + '.aac',
     hasPermission: undefined,
-    bearModalVisible: false,
-    recordedAudioPath: ''
+    bearModalVisible: false
   }
 
   prepareRecordingPath (audioPath) {
@@ -128,8 +127,9 @@ class RecordScreen extends Component {
 
     try {
       const filePath = await AudioRecorder.stopRecording()
-      this._finishRecording(true, filePath)
-      this.props.recordSuccess(filePath)
+      if (Platform.OS === 'android') {
+        this._finishRecording(true, filePath)
+      }
       return filePath
     } catch (error) {
       console.error(error)
@@ -199,9 +199,9 @@ class RecordScreen extends Component {
   }
 
   _finishRecording (didSucceed, filePath) {
-    this.setState({ finished: didSucceed, recordedAudioPath: filePath })
+    this.setState({ finished: didSucceed })
+    this.props.recordSuccess(this.state.audioPath)
     console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`)
-    console.log(AudioUtils.DocumentDirectoryPath)
   }
 
   setModalVisible (visible) {
@@ -239,7 +239,7 @@ class RecordScreen extends Component {
           modalVisible={this.state.bearModalVisible}
           bearList={this.props.bearList}
           uploadRequest={this.props.uploadRequest}
-          chosenAudioPath={this.state.recordedAudioPath}
+          chosenAudioPath={this.state.audioPath}
           setModalVisible={this.setModalVisible.bind(this)} />
       </View>
     )
