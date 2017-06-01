@@ -29,5 +29,11 @@ export default StyleSheet.create({
   },
   listContent: {
     marginTop: Metrics.baseMargin
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 28,
+    padding: 15,
+    fontWeight: 'bold'
   }
 })

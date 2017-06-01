@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/jsx-boolean-value */
 import React from 'react'
-import { View, Text, TouchableOpacity, ProgressBarAndroid, Modal, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, Modal, TextInput, ActivityIndicator, Animated } from 'react-native'
 
 import styles from './Styles/AudioListItemStyle'
 import Sound from 'react-native-sound'
@@ -15,10 +15,17 @@ export default class AudioListItem extends React.Component {
     super(props)
 
     this.state = {
-      myFlexDirection: 'row',
+      openStyle: {
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30
+      },
       modalVisible: false,
       modalAudioName: this.props.audio.fileName
     }
+  }
+
+  componentWillMount () {
+    this.animatedHeightValue = new Animated.Value(45)
   }
 
   componentDidMount () {
@@ -45,6 +52,21 @@ export default class AudioListItem extends React.Component {
     }, 100)
   }
 
+  onAnotherItemPress () {
+    Animated.timing(this.animatedHeightValue, {
+      toValue: 45,
+      duration: 500
+    }).start()
+  }
+
+  onItemPress () {
+    Animated.timing(this.animatedHeightValue, {
+      toValue: 100,
+      duration: 500
+    }).start()
+    this.props.onClick(this)
+  }
+
   setModalVisible (visible, audio) {
     this.setState({modalVisible: visible})
     if (audio) {
@@ -54,45 +76,40 @@ export default class AudioListItem extends React.Component {
     }
   }
 
-  _showProgressBar () {
-    if (this.props.audio.isUploading) {
-      return (
-        <View style={styles.audioExtraBottomContent}>
-          <Text style={styles.uploadStatusText}> Sending... </Text>
-          <ProgressBarAndroid styleAttr='Horizontal' color='white' style={styles.progressBar} />
-        </View>
-      )
-    }
-    return null
-  }
-
   render () {
+    const animatedHeightStyle = { height: this.animatedHeightValue }
+
     let statusIcon = (this.props.audio.sent)
-    ? (<Text style={[styles.audioStatus, {color: 'green'}]}>
-      <IonIcon name='md-paw' color='green' size={30} style={{marginRight: 10}} />
-      Sent
-    </Text>)
-    : (<Text style={[styles.audioStatus, {color: '#d35400'}]}>
-      <IonIcon name='md-alert' color='#d35400' size={30} style={{marginRight: 10}} />
-      NotSent
-    </Text>)
+    ? (<View style={styles.audioStatus}>
+      <IonIcon name='md-paw' color='green' size={25} />
+      <Text style={[styles.audioStatusText, {color: 'green'}]}>
+        Sent
+      </Text>
+    </View>)
+    : (<View style={styles.audioStatus}>
+      <IonIcon name='md-alert' color='#d35400' size={25} />
+      <Text style={[styles.audioStatusText, {color: '#d35400'}]}>
+        Not Sent
+      </Text>
+    </View>)
 
     let sendContent = (this.props.audio.isUploading)
-    ? null
+    ? <ActivityIndicator animating={true} style={styles.additionalButtons} color={'rgba(255,255,255, 0.75)'} size='large' />
     : (<TouchableOpacity
+      disabled={this.props.audio.sent}
       style={styles.additionalButtons}
       onPress={() => {
         this.props.setModalVisible(true, this.props.audio.filePath)
       }}>
-      <IonIcon name='md-send' style={{marginLeft: 3}} color={'white'} size={30} />
+      <IonIcon name='md-send' style={{marginLeft: 3}} color={'white'} size={35} />
     </TouchableOpacity>)
 
     return (
-      <View>
+      <Animated.View style={[styles.row, animatedHeightStyle]}>
         <TouchableOpacity
-          onPress={(event) => this.props.onClick(this)}
+          onPress={(event) => this.onItemPress()}
           onLongPress={(event) => this.setModalVisible(!this.state.modalVisible)}
-          style={[styles.audioRow, {flexDirection: this.state.myFlexDirection}]}>
+          style={[styles.audioRow, this.state.openStyle]}>
           <View style={styles.audioHeading}>
             {statusIcon}
             <Text style={styles.audioName}>
@@ -100,26 +117,21 @@ export default class AudioListItem extends React.Component {
             </Text>
           </View>
         </TouchableOpacity>
-
-        { this.state.myFlexDirection === 'column'
-          ? <View animation='slideInDown' duration='900' style={[styles.audioExtra]}>
-            <View style={styles.audioExtraTopContent}>
-              <TouchableOpacity
-                style={styles.additionalButtons}
-                onPress={(event) => this.playAudio(this.props.audio.filePath)}>
-                <IonIcon name='md-play' color={'white'} size={30} />
-              </TouchableOpacity>
-              {sendContent}
-              <TouchableOpacity
-                style={styles.additionalButtons}
-                onPressIn={(event) => this.props.deleteAudio(this.props.audio.filePath)}>
-                <IonIcon name='md-trash' color={'white'} size={30} />
-              </TouchableOpacity>
-            </View>
-            {this._showProgressBar()}
+        <View style={styles.audioExtra}>
+          <View style={styles.audioExtraTopContent}>
+            <TouchableOpacity
+              style={styles.additionalButtons}
+              onPress={(event) => this.playAudio(this.props.audio.filePath)}>
+              <IonIcon name='md-play' color={'white'} size={35} />
+            </TouchableOpacity>
+            {sendContent}
+            <TouchableOpacity
+              style={styles.additionalButtons}
+              onPressIn={(event) => this.props.deleteAudio(this.props.audio.filePath)}>
+              <IonIcon name='md-trash' color={'white'} size={35} />
+            </TouchableOpacity>
           </View>
-          : null
-        }
+        </View>
         <Modal
           animationType={'slide'}
           transparent={true}
@@ -146,7 +158,7 @@ export default class AudioListItem extends React.Component {
             </View>
           </View>
         </Modal>
-      </View>
+      </Animated.View>
     )
   }
 }

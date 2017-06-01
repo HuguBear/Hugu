@@ -15,7 +15,7 @@ import BearActions from '../Redux/BearRedux'
 import styles from './Styles/BearListStyle'
 import AlertMessage from '../Components/AlertMessage'
 import RoundedButton from '../Components/RoundedButton'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import IonIcon from 'react-native-vector-icons/Ionicons'
 
 class BearListScreen extends React.Component {
   constructor (props) {
@@ -48,29 +48,37 @@ class BearListScreen extends React.Component {
     // You can condition on sectionID (key as string), for different cells
     // in different sections
     return (
-      <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-        <Text>
-          Name: {rowData.bearName}
-          @@@
-          Key: {rowData.bearKey}
-        </Text>
-        <TouchableOpacity
-          onPress={() => Alert.alert(
-            'Alert Title',
-            'alertMessage',
-            [
-              {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-              {text: 'OK', onPress: () => deleteBearRequest(rowID)}
-            ]
-          )}>
-          <Icon name='trash' size={30} />
-        </TouchableOpacity>
+      <View style={styles.bearRow}>
+        <View style={styles.bearName}>
+          <Text style={styles.bearNameText}>{rowData.bearName}</Text>
+          <TouchableOpacity
+            style={styles.trashButton}
+            onPress={() => Alert.alert(
+              'Delete',
+              'Do you really wish to delete the bear?',
+              [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                {text: 'OK', onPress: () => deleteBearRequest(rowID)}
+              ]
+            )}>
+            <IonIcon style={styles.trashIcon} name='md-trash' size={25} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.bearKey}>
+          <Text style={styles.bearKeyText}>{rowData.bearKey}</Text>
+        </View>
       </View>
     )
   }
 
   renderHeader (data, sectionID) {
-    return <Text>...................................{sectionID}...................................></Text>
+    switch (sectionID) {
+      case 'registered':
+        return <Text style={styles.sectionHeader}>{'REGISTERED'}</Text>
+      case 'unregistered':
+        return <Text style={styles.sectionHeader}>{'NOT REGISTERED'}</Text>
+      default:
+    }
   }
 
   setModalVisible (visible, bear) {
@@ -87,9 +95,9 @@ class BearListScreen extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Nothing to See Here, Move Along' show={this.noRowData()} />
+        <AlertMessage title='No bears added!' show={this.noRowData()} />
         <RoundedButton onPress={() => { this.setModalVisible(!this.state.modalVisible) }}>
-           Add Bears
+           Add Bear
         </RoundedButton>
         <ListView
           renderSectionHeader={this.renderHeader}

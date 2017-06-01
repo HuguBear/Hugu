@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React from 'react'
-import { View, ListView, ToastAndroid } from 'react-native'
+import { View, ListView, ToastAndroid, Text } from 'react-native'
 import { connect } from 'react-redux'
 
 import AlertMessage from '../Components/AlertMessage'
@@ -82,7 +82,9 @@ class AudioListScreen extends React.Component {
     return (
       <View style={styles.container}>
         <AlertMessage title='Nothing to See Here, Try recording and come back!' show={this.noRowData()} />
+        <Text style={styles.title}>Audio Recordings</Text>
         <ListView
+          style={{marginBottom: 40, paddingBottom: 20}}
           keyboardShouldPersistTaps='always'
           contentContainerStyle={styles.listContent}
           dataSource={this.state.audioDataSource}
@@ -101,13 +103,24 @@ class AudioListScreen extends React.Component {
 
   _onItemClick (item) {
     if (focusedItem != null) {
-      focusedItem.setState({myFlexDirection: 'row'})
+      focusedItem.onAnotherItemPress()
+      focusedItem.setState({
+        openStyle: {
+          borderBottomLeftRadius: 30,
+          borderBottomRightRadius: 30
+        }
+      })
     }
-    focusedItem = item // HERE NOOP WARNIGN FOR SET STATE WHEN YOU DELETED LAST ELEMENT AND IT RECYCLES SO IT IS NULL
-    if (item.state.myFlexDirection === 'row') {
-      item.setState({myFlexDirection: 'column'})
+    if (focusedItem === item) {
+      focusedItem = null
     } else {
-      item.setState({myFlexDirection: 'row'})
+      focusedItem = item
+      focusedItem.setState({
+        openStyle: {
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0
+        }
+      })
     }
   }
 

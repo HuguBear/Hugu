@@ -5,78 +5,49 @@ import { Colors, Metrics } from '../../Themes/'
 
 export default StyleSheet.create({
   row: {
-    flex: 1,
-    backgroundColor: Colors.fire,
+    height: 45,
     marginVertical: Metrics.smallMargin,
-    justifyContent: 'center'
+    marginHorizontal: 40,
+    justifyContent: 'center',
+    zIndex: 3
   },
-  boldLabel: {
-    fontWeight: 'bold',
-    alignSelf: 'center',
-    color: Colors.snow,
-    textAlign: 'center',
-    marginBottom: Metrics.smallMargin
-  },
-  label: {
-    textAlign: 'center',
-    color: Colors.snow
-  },
-  listContent: {
-    marginTop: Metrics.baseMargin
-  },
-
   audioRow: {
+    position: 'absolute',
+    top: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: Metrics.screenWidth,
-    marginVertical: 2,
     paddingTop: 10,
     paddingBottom: 10,
     paddingHorizontal: 15,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    borderRadius: 30
   },
   audioExtra: {
-    marginTop: 10,
-    width: Metrics.screenWidth,
-    paddingVertical: 15,
+    position: 'absolute',
+    top: 45,
+    width: Metrics.screenWidth / 1.285,
+    paddingVertical: 4,
     backgroundColor: 'grey',
-    flexDirection: 'column',
-    justifyContent: 'flex-start'
+    borderRadius: 25,
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 0,
+    zIndex: 1
   },
   additionalButtons: {
-    flex: 1,
-    justifyContent: 'flex-start'
     // maxHeight: 50,
   },
   audioExtraTopContent: {
-    width: Metrics.screenWidth,
     flexDirection: 'row',
-    paddingHorizontal: 30,
-    // backgroundColor: 'green',
-    marginLeft: 30,
-    marginBottom: 10
-  },
-  audioExtraBottomContent: {
-    paddingHorizontal: 30,
+    justifyContent: 'space-around',
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    borderTopWidth: 2,
-    borderTopColor: '#757575'
-  },
-  progressBar: {
-    width: Metrics.screenWidth - 60,
-    height: 30,
-    marginRight: 30,
-    backgroundColor: 'grey'
+    marginBottom: 5
   },
   uploadStatusText: {
     marginTop: 10,
     fontSize: 15,
     fontWeight: '500'
   },
-
   audioName: {
     fontSize: 19,
     fontWeight: 'bold',
@@ -85,9 +56,16 @@ export default StyleSheet.create({
     maxWidth: Metrics.screenWidth - 70
   },
   audioStatus: {
+    flexDirection: 'row',
+    width: 82
+  },
+  audioStatusText: {
+    position: 'absolute',
+    top: 5,
+    left: 25,
     fontSize: 12,
     fontWeight: 'bold',
-    textAlign: 'left'
+    flexWrap: 'wrap'
   },
   audioHeading: {
     flexDirection: 'row',

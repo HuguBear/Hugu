@@ -57,6 +57,7 @@ export default StyleSheet.create({
     borderRadius: 23
   },
   buttonText: {
+    paddingTop: 1,
     textAlign: 'center',
     color: Colors.ricePaper,
     fontSize: 30
