@@ -53,10 +53,10 @@ class AudioListScreen extends React.Component {
   }
 
   componentWillReceiveProps (newProps) {
-    if (newProps.error === 'SUCCESSFUL' && !this.state.startup) {
+    if (newProps.error === 'SUCCESSFUL' && !this.state.startup && newProps.error !== this.props.error) {
       ToastAndroid.show('Upload SUCCESSFUL', ToastAndroid.LONG)
     }
-    if (newProps.error === 'UNSUCCESSFUL' && !this.state.startup) {
+    if (newProps.error === 'UNSUCCESSFUL' && !this.state.startup && newProps.error !== this.props.error) {
       ToastAndroid.show('Upload FAILED', ToastAndroid.LONG)
     }
     if (newProps.audioFiles !== this.props.audioFiles) {
@@ -71,6 +71,14 @@ class AudioListScreen extends React.Component {
     return this.state.audioDataSource.getRowCount() === 0
   }
 
+  renderHeader () {
+    if (!this.noRowData()) {
+      return <Text style={styles.title}>Audio Recordings</Text>
+    } else {
+      return <AlertMessage title='Nothing to See Here, Try recording and come back!' />
+    }
+  }
+
   setModalVisible (visible, path) {
     this.setState({bearModalVisible: visible})
     if (path) {
@@ -81,8 +89,7 @@ class AudioListScreen extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Nothing to See Here, Try recording and come back!' show={this.noRowData()} />
-        <Text style={styles.title}>Audio Recordings</Text>
+        {this.renderHeader()}
         <ListView
           style={{marginBottom: 40, paddingBottom: 20}}
           keyboardShouldPersistTaps='always'

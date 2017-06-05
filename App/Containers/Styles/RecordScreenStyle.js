@@ -11,6 +11,7 @@ export default StyleSheet.create({
   },
   controls: {
     justifyContent: 'center',
+    height: Metrics.screenHeight / 1.5,
     alignItems: 'center',
     flex: 1
   },

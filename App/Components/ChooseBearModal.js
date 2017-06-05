@@ -11,14 +11,14 @@ export default class ChooseBearModal extends Component {
     const ds = new ListView.DataSource({rowHasChanged})
 
     this.state = {
-      dataSource: ds.cloneWithRows(props.bearList)
+      dataSource: ds.cloneWithRows(props.bearList.connected)
     }
   }
 
   componentWillReceiveProps (newProps) {
     if (newProps.bearList) {
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.bearList)
+        dataSource: this.state.dataSource.cloneWithRows(newProps.bearList.connected)
       })
     }
   }
@@ -28,19 +28,32 @@ export default class ChooseBearModal extends Component {
   }
 
   renderRow (rowData, uploadRequest, setModalVisible, chosenAudioPath) {
-    // You can condition on sectionID (key as string), for different cells
-    // in different sections
     return (
-      <View>
+      <View style={styles.bearRow}>
         <TouchableOpacity
-          style={styles.bearRow}
+          style={styles.bearNameButton}
           onPress={() => {
             uploadRequest(chosenAudioPath, rowData.bearKey)
             setModalVisible(false)
           }}>
-          <Text style={styles.bearText}>{rowData.bearName} @@@{rowData.bearKey}@@@</Text>
+          <View style={styles.bearName}>
+            <Text style={styles.bearNameText}>{rowData.bearName}</Text>
+          </View>
         </TouchableOpacity>
+        <View style={styles.bearKey}>
+          <Text style={styles.bearKeyText}>{rowData.bearKey}</Text>
+        </View>
       </View>
+      // <View>
+      //   <TouchableOpacity
+      //     style={styles.bearRow}
+      //     onPress={() => {
+      //       uploadRequest(chosenAudioPath, rowData.bearKey)
+      //       setModalVisible(false)
+      //     }}>
+      //     <Text style={styles.bearText}>{rowData.bearName} @@@{rowData.bearKey}@@@</Text>
+      //   </TouchableOpacity>
+      // </View>
     )
   }
 
@@ -53,7 +66,7 @@ export default class ChooseBearModal extends Component {
           visible={this.props.modalVisible}
           onRequestClose={() => { this.props.setModalVisible(false) }} >
           <View style={{marginTop: 22}}>
-            <Text>Choose the bear!</Text>
+            <Text style={styles.modalTitle}>Choose the bear!</Text>
             <ListView
               contentContainerStyle={styles.listContent}
               dataSource={this.state.dataSource}

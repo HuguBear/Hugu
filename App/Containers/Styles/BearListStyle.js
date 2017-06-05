@@ -6,10 +6,14 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     // marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.cloud
+    backgroundColor: Colors.cloud,
+    paddingBottom: 65
+  },
+  helperText: {
+    textAlign: 'center'
   },
   listContent: {
-    marginTop: Metrics.baseMargin
+    marginVertical: Metrics.baseMargin
   },
   modalParent: {
     backgroundColor: Colors.ricePaper,
@@ -51,11 +55,16 @@ export default StyleSheet.create({
     borderRadius: 10,
     height: 40
   },
-  bearNameText: {
+  bearNameButton: {
     width: Metrics.screenWidth / 1.70,
-    borderRightWidth: 2,
-    textAlign: 'center',
     paddingTop: 2,
+    borderBottomLeftRadius: 9,
+    borderTopLeftRadius: 9
+  },
+  connected: {backgroundColor: Colors.seaweed},
+  notConnected: {backgroundColor: Colors.ember},
+  bearNameText: {
+    textAlign: 'center',
     fontSize: 20
   },
   bearKey: {
@@ -79,6 +88,7 @@ export default StyleSheet.create({
   },
   trashButton: {
     padding: 7,
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
+    borderLeftWidth: 2
   }
 })

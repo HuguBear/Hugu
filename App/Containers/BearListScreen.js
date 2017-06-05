@@ -44,13 +44,18 @@ class BearListScreen extends React.Component {
     return this.state.dataSource.getRowCount() === 0
   }
 
-  renderRow (rowData, sectionID, rowID, deleteBearRequest) {
+  renderRow (rowData, sectionID, rowID, deleteBearRequest, connectBearRequest) {
     // You can condition on sectionID (key as string), for different cells
     // in different sections
     return (
       <View style={styles.bearRow}>
         <View style={styles.bearName}>
-          <Text style={styles.bearNameText}>{rowData.bearName}</Text>
+          <TouchableOpacity
+            style={[styles.bearNameButton, (sectionID === 'connected' ? styles.connected : styles.notConnected)]}
+            onLongPress={() => { (sectionID === 'connected' ? null : connectBearRequest(rowID)) }}
+            >
+            <Text style={styles.bearNameText}>{rowData.bearName}</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.trashButton}
             onPress={() => Alert.alert(
@@ -58,7 +63,7 @@ class BearListScreen extends React.Component {
               'Do you really wish to delete the bear?',
               [
                 {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                {text: 'OK', onPress: () => deleteBearRequest(rowID)}
+                {text: 'OK', onPress: () => deleteBearRequest({rowID, sectionID})}
               ]
             )}>
             <IonIcon style={styles.trashIcon} name='md-trash' size={25} />
@@ -73,10 +78,10 @@ class BearListScreen extends React.Component {
 
   renderHeader (data, sectionID) {
     switch (sectionID) {
-      case 'registered':
-        return <Text style={styles.sectionHeader}>{'REGISTERED'}</Text>
-      case 'unregistered':
-        return <Text style={styles.sectionHeader}>{'NOT REGISTERED'}</Text>
+      case 'connected':
+        return <Text style={styles.sectionHeader}>{'CONNECTED'}</Text>
+      case 'unconnected':
+        return <Text style={styles.sectionHeader}>{'NOT CONNECTED'}</Text>
       default:
     }
   }
@@ -103,9 +108,10 @@ class BearListScreen extends React.Component {
           renderSectionHeader={this.renderHeader}
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
-          renderRow={(data, sectionID, rowID) => this.renderRow(data, sectionID, rowID, this.props.deleteBearRequest)}
-          enableEmptySections
+          renderRow={(data, sectionID, rowID) => this.renderRow(data, sectionID, rowID, this.props.deleteBearRequest, this.props.connectBearRequest)}
+          enableEmptySections={false}
           pageSize={15} />
+        <Text style={styles.helperText}>Long press to connect bear for now!</Text>
         <Modal
           animationType={'slide'}
           transparent={true}
@@ -150,7 +156,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addBearRequest: (bear) => dispatch(BearActions.addBearRequest(bear)),
-    deleteBearRequest: (indexToDelete) => dispatch(BearActions.deleteBearRequest(indexToDelete)),
+    connectBearRequest: (index) => dispatch(BearActions.connectBearRequest(index)),
+    deleteBearRequest: (indexes) => dispatch(BearActions.deleteBearRequest(indexes)),
     makeSagaRequest: (testSagaInput) => dispatch(BearActions.testSagaRequest(testSagaInput))
   }
 }

@@ -15,10 +15,6 @@ export default class AudioListItem extends React.Component {
     super(props)
 
     this.state = {
-      openStyle: {
-        borderBottomLeftRadius: 30,
-        borderBottomRightRadius: 30
-      },
       modalVisible: false,
       modalAudioName: this.props.audio.fileName
     }
@@ -55,14 +51,14 @@ export default class AudioListItem extends React.Component {
   onAnotherItemPress () {
     Animated.timing(this.animatedHeightValue, {
       toValue: 45,
-      duration: 500
+      duration: 300
     }).start()
   }
 
   onItemPress () {
     Animated.timing(this.animatedHeightValue, {
       toValue: 100,
-      duration: 500
+      duration: 300
     }).start()
     this.props.onClick(this)
   }
@@ -109,7 +105,7 @@ export default class AudioListItem extends React.Component {
         <TouchableOpacity
           onPress={(event) => this.onItemPress()}
           onLongPress={(event) => this.setModalVisible(!this.state.modalVisible)}
-          style={[styles.audioRow, this.state.openStyle]}>
+          style={styles.audioRow}>
           <View style={styles.audioHeading}>
             {statusIcon}
             <Text style={styles.audioName}>

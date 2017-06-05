@@ -5,10 +5,10 @@ import { Colors, Metrics } from '../../Themes/'
 
 export default StyleSheet.create({
   row: {
-    height: 45,
     marginVertical: Metrics.smallMargin,
     marginHorizontal: 40,
     justifyContent: 'center',
+    overflow: 'hidden',
     zIndex: 3
   },
   audioRow: {
@@ -20,8 +20,7 @@ export default StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     paddingHorizontal: 15,
-    backgroundColor: 'white',
-    borderRadius: 30
+    backgroundColor: 'white'
   },
   audioExtra: {
     position: 'absolute',
@@ -29,10 +28,8 @@ export default StyleSheet.create({
     width: Metrics.screenWidth / 1.285,
     paddingVertical: 4,
     backgroundColor: 'grey',
-    borderRadius: 25,
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 0,
-    zIndex: 1
+    borderBottomRightRadius: 25,
+    borderBottomLeftRadius: 25
   },
   additionalButtons: {
     // maxHeight: 50,

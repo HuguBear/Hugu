@@ -86,7 +86,10 @@ export const renameAudio = (state: Object, { bundle }: Object) => {
     received: audio.received,
     listened: audio.listened
   } : audio)
-  return state.merge({audioFiles})
+  return state.merge({
+    audioFiles,
+    error: null
+  })
 }
 
 export const deleteAudio = (state: Object, { filePath }: Object) => {
@@ -124,7 +127,7 @@ export const uploadRequest = (state: Object, { filePath }: Object) => {
 
 export const uploadSuccess = (state: Object, { filePath }: Object) => {
   const audioFiles = state.audioFiles.map(audio => audio.filePath === filePath ? {filePath: audio.filePath, fileName: audio.fileName, isUploading: false, sent: true, received: audio.received, listened: audio.listened} : audio)
-  var sendingFromRecordScreen = (state.sendingFromRecordScreen === 1) ? 2 : 0
+  const sendingFromRecordScreen = (state.sendingFromRecordScreen === 1) ? 2 : 0
   return state.merge({
     audioFiles,
     sendingFromRecordScreen,

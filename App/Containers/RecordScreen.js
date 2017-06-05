@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-boolean-value */
 import React, {Component} from 'react'
+import * as Progress from '../Progress'
 
 import {
   Text,
@@ -23,14 +24,18 @@ import ChooseBearModal from '../Components/ChooseBearModal'
 import styles from './Styles/RecordScreenStyle'
 
 class RecordScreen extends Component {
-
-  state = {
-    currentTime: 0.0,
-    recording: false,
-    finished: false,
-    audioPath: AudioUtils.DocumentDirectoryPath + '/audio/' + new Date().toJSON().slice(2, 19).replace(/:/g, '').replace(/T/g, '').replace(/-/g, '') + '.aac',
-    hasPermission: undefined,
-    bearModalVisible: false
+  constructor (props) {
+    super(props)
+    this.state = {
+      currentTime: 0.0,
+      recording: false,
+      finished: false,
+      playing: false,
+      progress: 0,
+      audioPath: AudioUtils.DocumentDirectoryPath + '/audio/' + new Date().toJSON().slice(2, 19).replace(/:/g, '').replace(/T/g, '').replace(/-/g, '') + '.aac',
+      hasPermission: undefined,
+      bearModalVisible: false
+    }
   }
 
   prepareRecordingPath (audioPath) {
@@ -90,7 +95,10 @@ class RecordScreen extends Component {
   }
 
   renderSendingButton (sendingInfo) {
-    if (sendingInfo === 2) {
+    const ALREADY_SENT = 2
+    const SENDING = 1
+    const IDLE = 0
+    if (sendingInfo === ALREADY_SENT) {
       return (
         <TouchableOpacity style={styles.sentButton} onPress={() => { console.warn('Already sent') }}>
           <View>
@@ -98,7 +106,7 @@ class RecordScreen extends Component {
           </View>
         </TouchableOpacity>
       )
-    } else if (sendingInfo === 1) {
+    } else if (sendingInfo === SENDING) {
       return (
         <TouchableOpacity style={styles.button}>
           <View>
@@ -106,7 +114,7 @@ class RecordScreen extends Component {
           </View>
         </TouchableOpacity>
       )
-    } else {
+    } else if (sendingInfo === IDLE) {
       return (
         <TouchableOpacity style={styles.button} onPress={() => { this.setModalVisible(!this.state.bearModalVisible) }}>
           <View>
@@ -143,22 +151,37 @@ class RecordScreen extends Component {
     if (this.state.recording) {
       await this._stop()
     }
-
+    if (this.state.playing) {
+      return
+    }
     // These timeouts are a hacky workaround for some issues with react-native-sound.
     // See https://github.com/zmxv/react-native-sound/issues/89.
     setTimeout(() => {
+      let timerId
       var sound = new Sound(this.state.audioPath, '', (error) => {
         if (error) {
           console.log('failed to load the sound', error)
         }
       })
-
+      setTimeout(() => {
+        this.setState({playing: true})
+        const frequency = 200
+        const duration = sound.getDuration() * 1000
+        const howManyTimesRan = duration / frequency
+        const howMuchPerTime = 1 / howManyTimesRan + (0.095 / howManyTimesRan)
+        this.setState({progress: 0.0})
+        timerId = setInterval(() => this.setState({progress: this.state.progress + howMuchPerTime}), frequency)
+      }, 100)
       setTimeout(() => {
         sound.play((success) => {
           if (success) {
             console.log('successfully finished playing')
+            this.setState({playing: false})
+            clearInterval(timerId)
           } else {
             console.log('playback failed due to audio decoding errors')
+            this.setState({playing: false})
+            clearInterval(timerId)
           }
         })
       }, 100)
@@ -198,6 +221,20 @@ class RecordScreen extends Component {
     }
   }
 
+  delete () {
+    this.props.deleteAudio(this.state.audioPath)
+    this.refresh()
+  }
+
+  refresh () {
+    this.setState({
+      recording: false,
+      finished: false,
+      playing: false,
+      currentTime: 0
+    })
+  }
+
   _finishRecording (didSucceed, filePath) {
     this.setState({ finished: didSucceed })
     this.props.recordSuccess(this.state.audioPath)
@@ -213,21 +250,30 @@ class RecordScreen extends Component {
       <View style={styles.container}>
         <Image source={Images.huguWriter} style={styles.container} resizeMode='stretch'>
           <View style={styles.controls}>
-            <View style={styles.recordContainer}>
-              <Text style={styles.progressText}>{this.state.currentTime}s</Text>
-              <View style={[styles.outterRecordCircle]}>
-                <TouchableOpacity onPress={() => { this._record() }}>
-                  <View style={styles.innerRecordCircle}>
-                    <Icon name='microphone' size={50} color='#fff' />
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
+            <Text style={styles.progressText}>{this.state.currentTime}</Text>
+            <Progress.Circle
+              progress={(this.state.recording === true ? 1 : (this.state.playing ? this.state.progress : 1))}
+              size={170}
+              recording={this.state.recording}
+              currentTime={this.state.currentTime}
+              thickness={14}
+              color={'gray'}
+              borderWidth={2}
+              showsText={true}
+              recorded={this.state.finished && this.props.lastRecordedFilePath !== null}
+              unfilledColor={'rgba(255, 255, 255, 0.60)'}
+              onClick={() => { (this.state.finished === true && this.props.lastRecordedFilePath !== null ? this._play() : this._record()) }}
+              />
             {(this.state.finished && !this.state.recording && this.props.lastRecordedFilePath !== null) &&
               <View>
-                <TouchableOpacity style={styles.button} onPress={() => { this._play() }}>
+                <TouchableOpacity style={styles.button} onPress={() => { this.refresh() }}>
                   <View>
-                    <Text style={styles.buttonText}>Play <Icon name='play' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+                    <Text style={styles.buttonText}>New <Icon name='refresh' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => { this.delete() }}>
+                  <View>
+                    <Text style={styles.buttonText}>Delete <Icon name='trash' size={20} color='rgba(255,255,255, 0.75)' /></Text>
                   </View>
                 </TouchableOpacity>
                 {this.renderSendingButton(this.props.sendingFromRecordScreen)}
@@ -259,6 +305,7 @@ const mapDispatchToProps = (dispatch) => {
     recordStart: () => dispatch(RecordActions.recordStart()),
     recordSuccess: (filePath) => dispatch(RecordActions.recordSuccess(filePath)),
     recordFailure: (error) => dispatch(RecordActions.recordFailure(error)),
+    deleteAudio: (filePath) => dispatch(RecordActions.deleteAudio(filePath)),
     uploadRequest: (filePath, bearKey) => dispatch(RecordActions.uploadRequest(filePath, bearKey))
   }
 }
