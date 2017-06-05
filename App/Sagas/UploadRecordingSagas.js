@@ -44,7 +44,6 @@ export function * getUploadRecording (action) {
   }
 
   const response = yield call(promisifiedFn, settings)
-  console.log(response);
   if (typeof (response) === 'undefined') {
     yield put(RecordActions.uploadFailure('No response'))
     return
