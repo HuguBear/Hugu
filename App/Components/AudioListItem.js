@@ -1,24 +1,13 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/jsx-boolean-value */
 import React from 'react'
-import { View, Text, TouchableOpacity, Modal, TextInput, ActivityIndicator, Animated } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator, Animated } from 'react-native'
 
 import styles from './Styles/AudioListItemStyle'
-import Sound from 'react-native-sound'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import ConvertDate from '../Transforms/ConvertDate'
-import RoundedButton from '../Components/RoundedButton'
 
 export default class AudioListItem extends React.Component {
-
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      modalVisible: false,
-      modalAudioName: this.props.audio.fileName
-    }
-  }
 
   componentWillMount () {
     this.animatedHeightValue = new Animated.Value(45)
@@ -26,26 +15,6 @@ export default class AudioListItem extends React.Component {
 
   componentDidMount () {
     audioListItem = this
-  }
-
-  async playAudio (audioPath) {
-    setTimeout(() => {
-      var sound = new Sound(audioPath, '', (error) => {
-        if (error) {
-          console.log('failed to load the sound', error)
-        }
-      })
-
-      setTimeout(() => {
-        sound.play((success) => {
-          if (success) {
-            console.log('successfully finished playing')
-          } else {
-            console.log('playback failed due to audio decoding errors')
-          }
-        })
-      }, 100)
-    }, 100)
   }
 
   onAnotherItemPress () {
@@ -61,15 +30,6 @@ export default class AudioListItem extends React.Component {
       duration: 300
     }).start()
     this.props.onClick(this)
-  }
-
-  setModalVisible (visible, audio) {
-    this.setState({modalVisible: visible})
-    if (audio) {
-      this.props.renameAudio({filePath: this.props.audio.filePath, newName: this.state.modalAudioName})
-    } else {
-      this.setState({modalAudioName: this.props.audio.fileName})
-    }
   }
 
   render () {
@@ -95,7 +55,7 @@ export default class AudioListItem extends React.Component {
       disabled={this.props.audio.sent}
       style={styles.additionalButtons}
       onPress={() => {
-        this.props.setModalVisible(true, this.props.audio.filePath)
+        this.props.setBearModalVisible(true, this.props.audio.filePath)
       }}>
       <IonIcon name='md-send' style={{marginLeft: 3}} color={'white'} size={35} />
     </TouchableOpacity>)
@@ -104,7 +64,7 @@ export default class AudioListItem extends React.Component {
       <Animated.View style={[styles.row, animatedHeightStyle]}>
         <TouchableOpacity
           onPress={(event) => this.onItemPress()}
-          onLongPress={(event) => this.setModalVisible(!this.state.modalVisible)}
+          onLongPress={(event) => this.props.setAudioModalVisible(true, 'setting up', this.props.audio)}
           style={styles.audioRow}>
           <View style={styles.audioHeading}>
             {statusIcon}
@@ -117,7 +77,7 @@ export default class AudioListItem extends React.Component {
           <View style={styles.audioExtraTopContent}>
             <TouchableOpacity
               style={styles.additionalButtons}
-              onPress={(event) => this.playAudio(this.props.audio.filePath)}>
+              onPress={(event) => this.props.playAudio(this.props.audio.filePath)}>
               <IonIcon name='md-play' color={'white'} size={35} />
             </TouchableOpacity>
             {sendContent}
@@ -128,32 +88,6 @@ export default class AudioListItem extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-        <Modal
-          animationType={'slide'}
-          transparent={true}
-          visible={this.state.modalVisible}
-          onRequestClose={() => { this.setModalVisible(!this.state.modalVisible) }} >
-          <View style={styles.modalParent}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalTitle} >Change the name of recording!</Text>
-              <TextInput
-                autoFocus
-                style={styles.modalTextInput}
-                value={this.state.modalAudioName}
-                onChangeText={(modalAudioName) => this.setState({modalAudioName})}
-                placeholder={'Recording name'}
-              />
-              <RoundedButton
-                disabled={this.state.modalAudioName.length === 0 || this.state.modalAudioName === this.props.audio.fileName}
-                onPress={() => { this.setModalVisible(!this.state.modalVisible, {audioName: this.state.modalAudioName, audioPath: this.props.audio.filePath}) }}>
-                Rename recording
-              </RoundedButton>
-              <RoundedButton onPress={() => { this.setModalVisible(!this.state.modalVisible) }}>
-                Cancel
-              </RoundedButton>
-            </View>
-          </View>
-        </Modal>
       </Animated.View>
     )
   }

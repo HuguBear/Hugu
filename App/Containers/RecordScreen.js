@@ -31,6 +31,7 @@ class RecordScreen extends Component {
       recording: false,
       finished: false,
       playing: false,
+      duration: -1,
       progress: 0,
       audioPath: AudioUtils.DocumentDirectoryPath + '/audio/' + new Date().toJSON().slice(2, 19).replace(/:/g, '').replace(/T/g, '').replace(/-/g, '') + '.aac',
       hasPermission: undefined,
@@ -154,38 +155,33 @@ class RecordScreen extends Component {
     if (this.state.playing) {
       return
     }
-    // These timeouts are a hacky workaround for some issues with react-native-sound.
-    // See https://github.com/zmxv/react-native-sound/issues/89.
-    setTimeout(() => {
-      let timerId
-      var sound = new Sound(this.state.audioPath, '', (error) => {
-        if (error) {
-          console.log('failed to load the sound', error)
+    const sound = new Sound(this.state.audioPath, Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('failed to load the sound', error)
+        return
+      }
+      // loaded successfully
+      console.log('duration in seconds: ' + sound.getDuration() + ' number of channels: ' + sound.getNumberOfChannels())
+      this.setState({
+        playing: true,
+        duration: sound.getDuration() * 1000 + 150
+      })
+      sound.play((success) => {
+        if (success) {
+          console.log('successfully finished playing')
+          this.setState({
+            playing: false,
+            duration: -1
+          })
+        } else {
+          console.log('playback failed due to audio decoding errorssss')
+          this.setState({
+            playing: false,
+            duration: -1
+          })
         }
       })
-      setTimeout(() => {
-        this.setState({playing: true})
-        const frequency = 200
-        const duration = sound.getDuration() * 1000
-        const howManyTimesRan = duration / frequency
-        const howMuchPerTime = 1 / howManyTimesRan + (0.095 / howManyTimesRan)
-        this.setState({progress: 0.0})
-        timerId = setInterval(() => this.setState({progress: this.state.progress + howMuchPerTime}), frequency)
-      }, 100)
-      setTimeout(() => {
-        sound.play((success) => {
-          if (success) {
-            console.log('successfully finished playing')
-            this.setState({playing: false})
-            clearInterval(timerId)
-          } else {
-            console.log('playback failed due to audio decoding errors')
-            this.setState({playing: false})
-            clearInterval(timerId)
-          }
-        })
-      }, 100)
-    }, 100)
+    })
   }
 
   async _record () {
@@ -252,14 +248,13 @@ class RecordScreen extends Component {
           <View style={styles.controls}>
             <Text style={styles.progressText}>{this.state.currentTime}</Text>
             <Progress.Circle
-              progress={(this.state.recording === true ? 1 : (this.state.playing ? this.state.progress : 1))}
+              progress={1}
               size={170}
-              recording={this.state.recording}
-              currentTime={this.state.currentTime}
               thickness={14}
+              indeterminate={this.state.recording}
               color={'gray'}
-              borderWidth={2}
-              showsText={true}
+              duration={this.state.duration}
+              recording={this.state.recording}
               recorded={this.state.finished && this.props.lastRecordedFilePath !== null}
               unfilledColor={'rgba(255, 255, 255, 0.60)'}
               onClick={() => { (this.state.finished === true && this.props.lastRecordedFilePath !== null ? this._play() : this._record()) }}

@@ -1,12 +1,16 @@
 /* eslint-disable no-undef */
+/* eslint-disable react/jsx-boolean-value */
 import React from 'react'
-import { View, ListView, ToastAndroid, Text } from 'react-native'
+import { View, ListView, ToastAndroid, Text, Modal, TextInput } from 'react-native'
 import { connect } from 'react-redux'
 
 import AlertMessage from '../Components/AlertMessage'
 import AudioListItem from '../Components/AudioListItem.js'
 import ChooseBearModal from '../Components/ChooseBearModal'
 import RecordActions from '../Redux/RecordRedux'
+import Sound from 'react-native-sound'
+import RoundedButton from '../Components/RoundedButton'
+
 // import RNFS from 'react-native-fs'
 
 import styles from './Styles/AudioListStyle'
@@ -29,12 +33,16 @@ class AudioListScreen extends React.Component {
     audiolist = this
     this.state = {
       bearModalVisible: false,
+      audioModalVisible: false,
       audioDataSource: ds.cloneWithRows(audioData),
       chosenAudioPath: '',
+      modalAudioName: '',
+      audio: null,
       startup: true
     }
 
-    this.setModalVisible = this.setModalVisible.bind(this)
+    this.setBearModalVisible = this.setBearModalVisible.bind(this)
+    this.setAudioModalVisible = this.setAudioModalVisible.bind(this)
   }
 
   renderRow (rowData) {
@@ -42,9 +50,9 @@ class AudioListScreen extends React.Component {
       <AudioListItem
         audio={rowData}
         onClick={audiolist._onItemClick}
-        renameAudio={audiolist.props.renameAudio}
-        setModalVisible={audiolist.setModalVisible}
+        setAudioModalVisible={audiolist.setAudioModalVisible}
         deleteAudio={audiolist.props.deleteAudio}
+        playAudio={audiolist.playAudio}
       />
     )
   }
@@ -79,11 +87,55 @@ class AudioListScreen extends React.Component {
     }
   }
 
-  setModalVisible (visible, path) {
+  setBearModalVisible (visible, path) {
     this.setState({bearModalVisible: visible})
     if (path) {
       this.setState({chosenAudioPath: path})
     }
+  }
+
+  setAudioModalVisible (visible, action, audio) {
+    if (action === 'renaming') {
+      this.props.renameAudio({filePath: audio.audioPath, newName: audio.audioName})
+    } else if (action === 'setting up') {
+      this.setState({
+        audio: audio,
+        modalAudioName: audio.fileName
+      })
+    } else {
+      this.setState({modalAudioName: ''})
+    }
+    this.setState({audioModalVisible: visible})
+  }
+
+  async playAudio (audioPath) {
+    const sound = new Sound(audioPath, Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('failed to load the sound', error)
+        return
+      }
+      // loaded successfully
+      console.log('duration in seconds: ' + sound.getDuration() + ' number of channels: ' + sound.getNumberOfChannels())
+      // this.setState({
+      //   playing: true,
+      //   duration: sound.getDuration() * 1000 + 150
+      // })
+      sound.play((success) => {
+        if (success) {
+          console.log('successfully finished playing')
+          // this.setState({
+          //   playing: false,
+          //   duration: -1
+          // })
+        } else {
+          console.log('playback failed due to audio decoding errorssss')
+          // this.setState({
+          //   playing: false,
+          //   duration: -1
+          // })
+        }
+      })
+    })
   }
 
   render () {
@@ -103,7 +155,33 @@ class AudioListScreen extends React.Component {
           bearList={this.props.bearList}
           uploadRequest={this.props.uploadRequest}
           chosenAudioPath={this.state.chosenAudioPath}
-          setModalVisible={this.setModalVisible} />
+          setBearModalVisible={this.setBearModalVisible} />
+        <Modal
+          animationType={'slide'}
+          transparent={true}
+          visible={this.state.audioModalVisible}
+          onRequestClose={() => { this.setAudioModalVisible(!this.state.audioModalVisible) }} >
+          <View style={styles.modalParent}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalTitle} >Change the name of recording!</Text>
+              <TextInput
+                autoFocus
+                style={styles.modalTextInput}
+                value={this.state.modalAudioName}
+                onChangeText={(modalAudioName) => this.setState({modalAudioName})}
+                placeholder={'Recording name'}
+              />
+              <RoundedButton
+                disabled={this.state.modalAudioName.length === 0 || this.state.modalAudioName === this.state.audio.fileName}
+                onPress={() => { this.setAudioModalVisible(!this.state.audioModalVisible, 'renaming', {audioName: this.state.modalAudioName, audioPath: this.state.audio.filePath}) }}>
+                Rename recording
+              </RoundedButton>
+              <RoundedButton onPress={() => { this.setAudioModalVisible(!this.state.audioModalVisible) }}>
+                Cancel
+              </RoundedButton>
+            </View>
+          </View>
+        </Modal>
       </View>
     )
   }

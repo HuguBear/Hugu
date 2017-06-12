@@ -27,12 +27,13 @@ const styles = StyleSheet.create({
 export class ProgressCircle extends Component {
 
   static defaultProps = {
-    borderWidth: 1,
+    borderWidth: 0,
     color: 'rgba(0, 122, 255, 1)',
     direction: 'clockwise',
     formatText: '100',
     progress: 0,
-    showsText: false,
+    duration: 0,
+    showsText: true,
     size: 40,
     thickness: 3
   }
@@ -47,7 +48,7 @@ export class ProgressCircle extends Component {
     if (this.props.animated) {
       this.props.progress.addListener((event) => {
         this.progressValue = event.value
-        if (this.props.showsText || this.progressValue === 1) {
+        if (this.progressValue === 1) {
           this.forceUpdate()
         }
       })
@@ -75,7 +76,6 @@ export class ProgressCircle extends Component {
       indeterminate,
       progress,
       rotation,
-      showsText,
       size,
       style,
       textStyle,
@@ -85,7 +85,7 @@ export class ProgressCircle extends Component {
       ...restProps
     } = this.props
 
-    const border = borderWidth || (indeterminate ? 1 : 0)
+    const border = borderWidth || (indeterminate ? 1 : 1)
 
     const radius = (size / 2) - border
     const offset = {
@@ -127,54 +127,50 @@ export class ProgressCircle extends Component {
               strokeWidth={thickness}
             />
           ) : false}
-          {!indeterminate ? (
-            <Shape
-              radius={radius}
-              offset={offset}
-              startAngle={0}
-              endAngle={angle}
-              direction={direction}
-              stroke={color}
-              strokeWidth={thickness}
-            />
-          ) : false}
-          {border ? (
+          <Shape
+            radius={radius}
+            offset={offset}
+            startAngle={0}
+            endAngle={angle}
+            direction={direction}
+            stroke={color}
+            strokeWidth={thickness}
+          />
+          {indeterminate ? (
             <Arc
               radius={size / 2}
               startAngle={0}
-              endAngle={(indeterminate ? 1.8 : 2) * Math.PI}
+              endAngle={0.4 * Math.PI}
               stroke={borderColor || color}
-              strokeWidth={border}
+              strokeWidth={14}
             />
           ) : false}
         </Surface>
-        {!indeterminate && showsText ? (
-          <TouchableOpacity
-            onPress={onClick}
-            style={{
-              position: 'absolute',
-              left: textOffset,
-              top: textOffset,
-              width: textSize,
-              height: textSize,
-              borderRadius: textSize / 2,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.75)'
-            }}>
-            <View>
-              <Text
-                style={[{
-                  color,
-                  fontSize: textSize / 4.5,
-                  fontWeight: '300'
-                }, textStyle]}
-              >
-                {this.icon()}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ) : false}
+        <TouchableOpacity
+          onPress={onClick}
+          style={{
+            position: 'absolute',
+            left: textOffset,
+            top: textOffset,
+            width: textSize,
+            height: textSize,
+            borderRadius: textSize / 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.75)'
+          }}>
+          <View>
+            <Text
+              style={[{
+                color,
+                fontSize: textSize / 4.5,
+                fontWeight: '300'
+              }, textStyle]}
+            >
+              {this.icon()}
+            </Text>
+          </View>
+        </TouchableOpacity>
         {children}
       </View>
     )

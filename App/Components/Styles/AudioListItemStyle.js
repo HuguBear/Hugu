@@ -1,7 +1,7 @@
 // @flow
 
 import { StyleSheet } from 'react-native'
-import { Colors, Metrics } from '../../Themes/'
+import { Metrics } from '../../Themes/'
 
 export default StyleSheet.create({
   row: {
@@ -80,28 +80,5 @@ export default StyleSheet.create({
   deleteButton: {
     fontSize: 15,
     marginLeft: 10
-  },
-  modalParent: {
-    backgroundColor: Colors.ricePaper,
-    height: Metrics.screenHeight
-  },
-  modalView: {
-    marginTop: 50,
-    width: Metrics.screenWidth - 80,
-    alignSelf: 'center',
-    backgroundColor: Colors.steel,
-    borderRadius: 10
-  },
-  modalTitle: {
-    height: 20,
-    margin: 10,
-    textAlign: 'center'
-  },
-  modalTextInput: {
-    height: 40,
-    width: 200,
-    margin: 15,
-    alignSelf: 'center',
-    textAlign: 'center'
   }
 })
