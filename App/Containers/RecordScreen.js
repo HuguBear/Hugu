@@ -269,7 +269,7 @@ class RecordScreen extends Component {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={() => { this.delete() }}>
                   <View>
-                    <Text style={styles.buttonText}>Delete <Icon name='trash' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+                    <Text style={styles.buttonText}>{I18n.t('delete')} <Icon name='trash' size={20} color='rgba(255,255,255, 0.75)' /></Text>
                   </View>
                 </TouchableOpacity>
                 {this.renderSendingButton(this.props.sendingFromRecordScreen)}

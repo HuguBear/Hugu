@@ -103,7 +103,7 @@ class BearListScreen extends React.Component {
       <View style={styles.container}>
         <AlertMessage title='No bears added!' show={this.noRowData()} />
         <RoundedButton onPress={() => { this.setModalVisible(!this.state.modalVisible) }}>
-           Add Bear
+          {I18n.t('addBear')}
         </RoundedButton>
         <ListView
           renderSectionHeader={this.renderHeader}
