@@ -10,7 +10,7 @@ import ChooseBearModal from '../Components/ChooseBearModal'
 import RecordActions from '../Redux/RecordRedux'
 import Sound from 'react-native-sound'
 import RoundedButton from '../Components/RoundedButton'
-
+import I18n from 'react-native-i18n'
 // import RNFS from 'react-native-fs'
 
 import styles from './Styles/AudioListStyle'
@@ -82,9 +82,9 @@ class AudioListScreen extends React.Component {
 
   renderHeader () {
     if (!this.noRowData()) {
-      return <Text style={styles.title}>Audio Recordings</Text>
+      return <Text style={styles.title}>{I18n.t('audioRecordings')}</Text>
     } else {
-      return <AlertMessage title='Nothing to See Here, Try recording and come back!' />
+      return <AlertMessage title={I18n.t('noRecordings')} />
     }
   }
 

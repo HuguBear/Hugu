@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-boolean-value */
 import React from 'react'
 import { View, Text, TouchableOpacity, ActivityIndicator, Animated } from 'react-native'
+import I18n from 'react-native-i18n'
 
 import styles from './Styles/AudioListItemStyle'
 import IonIcon from 'react-native-vector-icons/Ionicons'
@@ -39,13 +40,13 @@ export default class AudioListItem extends React.Component {
     ? (<View style={styles.audioStatus}>
       <IonIcon name='md-paw' color='green' size={25} />
       <Text style={[styles.audioStatusText, {color: 'green'}]}>
-        Sent
+        {I18n.t('sent')}
       </Text>
     </View>)
     : (<View style={styles.audioStatus}>
       <IonIcon name='md-alert' color='#d35400' size={25} />
       <Text style={[styles.audioStatusText, {color: '#d35400'}]}>
-        Not Sent
+        {I18n.t('notSent')}
       </Text>
     </View>)
 

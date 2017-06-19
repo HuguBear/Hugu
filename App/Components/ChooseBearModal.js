@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Modal, Text, TouchableOpacity, View, ListView } from 'react-native'
+import I18n from 'react-native-i18n'
 
 import styles from './Styles/ChooseBearModalStyle'
 import RoundedButton from './RoundedButton'
@@ -66,7 +67,7 @@ export default class ChooseBearModal extends Component {
           visible={this.props.modalVisible}
           onRequestClose={() => { this.props.setBearModalVisible(false) }} >
           <View style={{marginTop: 22}}>
-            <Text style={styles.modalTitle}>Choose the bear!</Text>
+            <Text style={styles.modalTitle}>{I18n.t('chooseBear')}</Text>
             <ListView
               contentContainerStyle={styles.listContent}
               dataSource={this.state.dataSource}
@@ -74,7 +75,7 @@ export default class ChooseBearModal extends Component {
             />
             <RoundedButton
               onPress={() => this.props.setBearModalVisible(false)}>
-              Cancel
+              {I18n.t('cancel')}
             </RoundedButton>
           </View>
         </Modal>

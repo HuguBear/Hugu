@@ -16,6 +16,7 @@ import Sound from 'react-native-sound'
 import {AudioRecorder, AudioUtils} from 'react-native-audio'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RNFS from 'react-native-fs'
+import I18n from 'react-native-i18n'
 
 import { connect } from 'react-redux'
 import RecordActions from '../Redux/RecordRedux'
@@ -103,7 +104,7 @@ class RecordScreen extends Component {
       return (
         <TouchableOpacity style={styles.sentButton} onPress={() => { console.warn('Already sent') }}>
           <View>
-            <Text style={styles.buttonText}>Sent <Icon name='paw' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+            <Text style={styles.buttonText}>{I18n.t('sent')} <Icon name='paw' size={20} color='rgba(255,255,255, 0.75)' /></Text>
           </View>
         </TouchableOpacity>
       )
@@ -111,7 +112,7 @@ class RecordScreen extends Component {
       return (
         <TouchableOpacity style={styles.button}>
           <View>
-            <Text style={styles.sendingText}>Sending</Text><ActivityIndicator animating={true} style={styles.sendingIndicator} color={'rgba(255,255,255, 0.75)'} size='large' />
+            <Text style={styles.sendingText}>{I18n.t('sending')} </Text><ActivityIndicator animating={true} style={styles.sendingIndicator} color={'rgba(255,255,255, 0.75)'} size='large' />
           </View>
         </TouchableOpacity>
       )
@@ -119,7 +120,7 @@ class RecordScreen extends Component {
       return (
         <TouchableOpacity style={styles.button} onPress={() => { this.setBearModalVisible(!this.state.bearModalVisible) }}>
           <View>
-            <Text style={styles.buttonText}>Send <Icon name='send' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+            <Text style={styles.buttonText}>{I18n.t('send')} <Icon name='send' size={20} color='rgba(255,255,255, 0.75)' /></Text>
           </View>
         </TouchableOpacity>
       )
@@ -263,7 +264,7 @@ class RecordScreen extends Component {
               <View>
                 <TouchableOpacity style={styles.button} onPress={() => { this.refresh() }}>
                   <View>
-                    <Text style={styles.buttonText}>New <Icon name='refresh' size={20} color='rgba(255,255,255, 0.75)' /></Text>
+                    <Text style={styles.buttonText}>{I18n.t('new')} <Icon name='refresh' size={20} color='rgba(255,255,255, 0.75)' /></Text>
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={() => { this.delete() }}>

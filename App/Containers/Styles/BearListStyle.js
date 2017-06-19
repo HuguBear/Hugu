@@ -7,6 +7,7 @@ export default StyleSheet.create({
     flex: 1,
     // marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.cloud,
+    paddingTop: 25,
     paddingBottom: 65
   },
   helperText: {

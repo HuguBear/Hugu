@@ -16,6 +16,7 @@ import styles from './Styles/BearListStyle'
 import AlertMessage from '../Components/AlertMessage'
 import RoundedButton from '../Components/RoundedButton'
 import IonIcon from 'react-native-vector-icons/Ionicons'
+import I18n from 'react-native-i18n'
 
 class BearListScreen extends React.Component {
   constructor (props) {
@@ -79,9 +80,9 @@ class BearListScreen extends React.Component {
   renderHeader (data, sectionID) {
     switch (sectionID) {
       case 'connected':
-        return <Text style={styles.sectionHeader}>{'CONNECTED'}</Text>
+        return <Text style={styles.sectionHeader}>{I18n.t('connected')}</Text>
       case 'unconnected':
-        return <Text style={styles.sectionHeader}>{'NOT CONNECTED'}</Text>
+        return <Text style={styles.sectionHeader}>{I18n.t('notConnected')}</Text>
       default:
     }
   }
@@ -111,7 +112,7 @@ class BearListScreen extends React.Component {
           renderRow={(data, sectionID, rowID) => this.renderRow(data, sectionID, rowID, this.props.deleteBearRequest, this.props.connectBearRequest)}
           enableEmptySections={false}
           pageSize={15} />
-        <Text style={styles.helperText}>Long press to connect bear for now!</Text>
+        <Text style={styles.helperText}>{I18n.t('longPress')}</Text>
         <Modal
           animationType={'slide'}
           transparent={true}
@@ -119,25 +120,25 @@ class BearListScreen extends React.Component {
           onRequestClose={() => { this.setModalVisible(!this.state.modalVisible) }} >
           <View style={styles.modalParent}>
             <View style={styles.modalView}>
-              <Text style={styles.modalTitle} >Add bear!</Text>
+              <Text style={styles.modalTitle} >{I18n.t('addBear')}!</Text>
               <TextInput
                 autoFocus
                 style={styles.modalTextInput}
                 value={this.state.modalBearName}
                 onChangeText={(modalBearName) => this.setState({modalBearName})}
-                placeholder={'Bear Name'} />
+                placeholder={I18n.t('bearName')} />
               <TextInput
                 style={styles.modalTextInput}
                 value={this.state.modalBearKey}
                 onChangeText={(modalBearKey) => this.setState({modalBearKey})}
-                placeholder={'Bear Key'} />
+                placeholder={I18n.t('bearKey')} />
               <RoundedButton
                 disabled={(this.state.modalBearKey.length === 0 || this.state.modalBearName.length === 0)}
                 onPress={() => { this.setModalVisible(!this.state.modalVisible, {bearName: this.state.modalBearName, bearKey: this.state.modalBearKey}) }}>
-                Add Bear
+                {I18n.t('addBear')}
               </RoundedButton>
               <RoundedButton onPress={() => { this.setModalVisible(!this.state.modalVisible) }}>
-                Cancel
+                {I18n.t('cancel')}
               </RoundedButton>
             </View>
           </View>
