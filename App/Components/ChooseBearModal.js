@@ -27,14 +27,14 @@ export default class ChooseBearModal extends Component {
     return this.state.dataSource.getRowCount() === 0
   }
 
-  renderRow (rowData, uploadRequest, setModalVisible, chosenAudioPath) {
+  renderRow (rowData, uploadRequest, setBearModalVisible, chosenAudioPath) {
     return (
       <View style={styles.bearRow}>
         <TouchableOpacity
           style={styles.bearNameButton}
           onPress={() => {
             uploadRequest(chosenAudioPath, rowData.bearKey)
-            setModalVisible(false)
+            setBearModalVisible(false)
           }}>
           <View style={styles.bearName}>
             <Text style={styles.bearNameText}>{rowData.bearName}</Text>
@@ -49,7 +49,7 @@ export default class ChooseBearModal extends Component {
       //     style={styles.bearRow}
       //     onPress={() => {
       //       uploadRequest(chosenAudioPath, rowData.bearKey)
-      //       setModalVisible(false)
+      //       setBearModalVisible(false)
       //     }}>
       //     <Text style={styles.bearText}>{rowData.bearName} @@@{rowData.bearKey}@@@</Text>
       //   </TouchableOpacity>
@@ -64,16 +64,16 @@ export default class ChooseBearModal extends Component {
           animationType={'slide'}
           transparent={false}
           visible={this.props.modalVisible}
-          onRequestClose={() => { this.props.setModalVisible(false) }} >
+          onRequestClose={() => { this.props.setBearModalVisible(false) }} >
           <View style={{marginTop: 22}}>
             <Text style={styles.modalTitle}>Choose the bear!</Text>
             <ListView
               contentContainerStyle={styles.listContent}
               dataSource={this.state.dataSource}
-              renderRow={(rowData) => this.renderRow(rowData, this.props.uploadRequest, this.props.setModalVisible, this.props.chosenAudioPath)}
+              renderRow={(rowData) => this.renderRow(rowData, this.props.uploadRequest, this.props.setBearModalVisible, this.props.chosenAudioPath)}
             />
             <RoundedButton
-              onPress={() => this.props.setModalVisible(false)}>
+              onPress={() => this.props.setBearModalVisible(false)}>
               Cancel
             </RoundedButton>
           </View>

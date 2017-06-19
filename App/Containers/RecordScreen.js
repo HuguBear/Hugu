@@ -117,7 +117,7 @@ class RecordScreen extends Component {
       )
     } else if (sendingInfo === IDLE) {
       return (
-        <TouchableOpacity style={styles.button} onPress={() => { this.setModalVisible(!this.state.bearModalVisible) }}>
+        <TouchableOpacity style={styles.button} onPress={() => { this.setBearModalVisible(!this.state.bearModalVisible) }}>
           <View>
             <Text style={styles.buttonText}>Send <Icon name='send' size={20} color='rgba(255,255,255, 0.75)' /></Text>
           </View>
@@ -155,7 +155,7 @@ class RecordScreen extends Component {
     if (this.state.playing) {
       return
     }
-    const sound = new Sound(this.state.audioPath, Sound.MAIN_BUNDLE, (error) => {
+    const sound = new Sound(this.state.audioPath, '', (error) => {
       if (error) {
         console.log('failed to load the sound', error)
         return
@@ -237,7 +237,7 @@ class RecordScreen extends Component {
     console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`)
   }
 
-  setModalVisible (visible) {
+  setBearModalVisible (visible) {
     this.setState({bearModalVisible: visible})
   }
 
@@ -281,7 +281,7 @@ class RecordScreen extends Component {
           bearList={this.props.bearList}
           uploadRequest={this.props.uploadRequest}
           chosenAudioPath={this.state.audioPath}
-          setModalVisible={this.setModalVisible.bind(this)} />
+          setBearModalVisible={this.setBearModalVisible.bind(this)} />
       </View>
     )
   }

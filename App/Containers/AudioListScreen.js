@@ -51,6 +51,7 @@ class AudioListScreen extends React.Component {
         audio={rowData}
         onClick={audiolist._onItemClick}
         setAudioModalVisible={audiolist.setAudioModalVisible}
+        setBearModalVisible={audiolist.setBearModalVisible}
         deleteAudio={audiolist.props.deleteAudio}
         playAudio={audiolist.playAudio}
       />
@@ -109,7 +110,7 @@ class AudioListScreen extends React.Component {
   }
 
   async playAudio (audioPath) {
-    const sound = new Sound(audioPath, Sound.MAIN_BUNDLE, (error) => {
+    const sound = new Sound(audioPath, '', (error) => {
       if (error) {
         console.log('failed to load the sound', error)
         return
