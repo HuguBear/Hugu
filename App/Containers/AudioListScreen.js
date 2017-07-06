@@ -38,7 +38,8 @@ class AudioListScreen extends React.Component {
       chosenAudioPath: '',
       modalAudioName: '',
       audio: null,
-      startup: true
+      startup: true,
+      playing: false
     }
 
     this.setBearModalVisible = this.setBearModalVisible.bind(this)
@@ -109,7 +110,11 @@ class AudioListScreen extends React.Component {
     this.setState({audioModalVisible: visible})
   }
 
-  async playAudio (audioPath) {
+  async playAudio (audioPath, audioItem) {
+    if (audiolist.state.playing) {
+      return
+    }
+
     const sound = new Sound(audioPath, '', (error) => {
       if (error) {
         console.log('failed to load the sound', error)
@@ -117,23 +122,30 @@ class AudioListScreen extends React.Component {
       }
       // loaded successfully
       console.log('duration in seconds: ' + sound.getDuration() + ' number of channels: ' + sound.getNumberOfChannels())
-      // this.setState({
-      //   playing: true,
-      //   duration: sound.getDuration() * 1000 + 150
-      // })
+      let duration = sound.getDuration()
+      console.log(duration)
+      // audioItem.setState({playing: true})
+      audiolist.setState({
+        duration: duration, // HERE ONLY RUNS AFTERWARDS< IN RECORD SCREEN IN RIGHT TIME
+        playing: true
+      })
+      console.log(audiolist.state.duration)
+      console.log('lslslslssll')
       sound.play((success) => {
         if (success) {
           console.log('successfully finished playing')
-          // this.setState({
-          //   playing: false,
-          //   duration: -1
-          // })
+          // audioItem.setState({playing: false})
+          audiolist.setState({
+            playing: false,
+            duration: -1
+          })
         } else {
           console.log('playback failed due to audio decoding errorssss')
-          // this.setState({
-          //   playing: false,
-          //   duration: -1
-          // })
+          // audioItem.setState({playing: false})
+          audiolist.setState({
+            playing: false,
+            duration: -1
+          })
         }
       })
     })

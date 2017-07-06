@@ -46,11 +46,11 @@ export default StyleSheet.create({
     fontWeight: '500'
   },
   audioName: {
-    fontSize: 19,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: 'arial',
     alignSelf: 'flex-end',
-    textAlign: 'right',
-    maxWidth: Metrics.screenWidth - 70
+    textAlign: 'left',
+    width: Metrics.screenWidth - 70
   },
   audioStatus: {
     flexDirection: 'row',

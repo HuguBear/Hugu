@@ -7,8 +7,17 @@ import I18n from 'react-native-i18n'
 import styles from './Styles/AudioListItemStyle'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import ConvertDate from '../Transforms/ConvertDate'
+import * as Progress from '../Progress'
+import Sound from 'react-native-sound'
 
 export default class AudioListItem extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      playing: false,
+      duration: -1
+    }
+  }
 
   componentWillMount () {
     this.animatedHeightValue = new Animated.Value(45)
@@ -31,6 +40,41 @@ export default class AudioListItem extends React.Component {
       duration: 300
     }).start()
     this.props.onClick(this)
+  }
+
+  async playAudio (audioPath, audioItem) {
+    if (this.state.playing) {
+      return
+    }
+
+    const sound = new Sound(audioPath, '', (error) => {
+      if (error) {
+        console.log('failed to load the sound', error)
+        return
+      }
+      // loaded successfully
+      console.log('duration in seconds: ' + sound.getDuration() + ' number of channels: ' + sound.getNumberOfChannels())
+      let duration = sound.getDuration() * 1000
+      this.setState({
+        duration: duration,
+        playing: true
+      })
+      sound.play((success) => {
+        if (success) {
+          console.log('successfully finished playing')
+          this.setState({
+            playing: false,
+            duration: -1
+          })
+        } else {
+          console.warn('playback failed due to audio decoding errorssss')
+          this.setState({
+            playing: false,
+            duration: -1
+          })
+        }
+      })
+    })
   }
 
   render () {
@@ -73,12 +117,16 @@ export default class AudioListItem extends React.Component {
               {ConvertDate(this.props.audio.fileName)}
             </Text>
           </View>
+          <Progress.Bar
+            duration={this.state.duration}
+          />
         </TouchableOpacity>
         <View style={styles.audioExtra}>
           <View style={styles.audioExtraTopContent}>
             <TouchableOpacity
+              disabled={this.state.playing}
               style={styles.additionalButtons}
-              onPress={(event) => this.props.playAudio(this.props.audio.filePath)}>
+              onPress={(event) => this.playAudio(this.props.audio.filePath, this)}>
               <IonIcon name='md-play' color={'white'} size={35} />
             </TouchableOpacity>
             {sendContent}
