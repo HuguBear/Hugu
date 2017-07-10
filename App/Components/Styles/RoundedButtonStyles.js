@@ -4,19 +4,23 @@ import { Fonts, Colors, Metrics } from '../../Themes/'
 export default StyleSheet.create({
   button: {
     height: 45,
+    width: Metrics.screenWidth * 0.5,
     borderRadius: 5,
     marginHorizontal: Metrics.section,
     marginVertical: Metrics.baseMargin,
     backgroundColor: Colors.snow,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignSelf: 'center'
   },
   disabledButton: {
     height: 45,
+    width: Metrics.screenWidth * 0.5,
     borderRadius: 5,
     marginHorizontal: Metrics.section,
     marginVertical: Metrics.baseMargin,
     justifyContent: 'center',
-    backgroundColor: Colors.ember
+    backgroundColor: Colors.ember,
+    alignSelf: 'center'
   },
   buttonText: {
     color: Colors.coal,

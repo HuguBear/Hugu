@@ -97,16 +97,18 @@ export default function withAnimation (WrappedComponent, indeterminateProgress) 
 
     load (duration) {
       this.state.progress.setValue(0)
-      Animated.timing(this.state.progress, {
-        toValue: this.props.direction === 'counter-clockwise' ? -1 : 1,
-        duration: duration,
-        easing: Easing.linear,
-        isInteraction: false
-      }).start((endState) => {
-        if (endState.finished) {
-          return
-        }
-      })
+      setTimeout(() => {
+        Animated.timing(this.state.progress, {
+          toValue: this.props.direction === 'counter-clockwise' ? -1 : 1,
+          duration: duration,
+          easing: Easing.linear,
+          isInteraction: false
+        }).start((endState) => {
+          if (endState.finished) {
+            return
+          }
+        })
+      }, 375)
     }
 
     render () {

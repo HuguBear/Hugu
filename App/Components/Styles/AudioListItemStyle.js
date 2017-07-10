@@ -13,10 +13,12 @@ export default StyleSheet.create({
   },
   audioRow: {
     position: 'absolute',
+    width: Metrics.screenWidth / 1.285,
     top: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     paddingTop: 10,
     paddingBottom: 10,
     paddingHorizontal: 15,
@@ -29,7 +31,8 @@ export default StyleSheet.create({
     paddingVertical: 4,
     backgroundColor: 'grey',
     borderBottomRightRadius: 25,
-    borderBottomLeftRadius: 25
+    borderBottomLeftRadius: 25,
+    alignSelf: 'center'
   },
   additionalButtons: {
     // maxHeight: 50,

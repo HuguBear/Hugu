@@ -28,14 +28,14 @@ export class ProgressCircle extends Component {
 
   static defaultProps = {
     borderWidth: 0,
-    color: 'rgba(0, 122, 255, 1)',
+    color: 'gray',
     direction: 'clockwise',
     formatText: '100',
-    progress: 0,
+    progress: 1,
     duration: 0,
     showsText: true,
-    size: 40,
-    thickness: 3
+    size: 170,
+    thickness: 14
   }
 
   constructor (props, context) {

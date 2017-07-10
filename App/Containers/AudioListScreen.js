@@ -50,7 +50,7 @@ class AudioListScreen extends React.Component {
     return (
       <AudioListItem
         audio={rowData}
-        onClick={audiolist._onItemClick}
+        onItemClick={audiolist._onItemClick}
         setAudioModalVisible={audiolist.setAudioModalVisible}
         setBearModalVisible={audiolist.setBearModalVisible}
         deleteAudio={audiolist.props.deleteAudio}
@@ -124,9 +124,8 @@ class AudioListScreen extends React.Component {
       console.log('duration in seconds: ' + sound.getDuration() + ' number of channels: ' + sound.getNumberOfChannels())
       let duration = sound.getDuration()
       console.log(duration)
-      // audioItem.setState({playing: true})
       audiolist.setState({
-        duration: duration, // HERE ONLY RUNS AFTERWARDS< IN RECORD SCREEN IN RIGHT TIME
+        duration: duration,
         playing: true
       })
       console.log(audiolist.state.duration)
@@ -134,14 +133,12 @@ class AudioListScreen extends React.Component {
       sound.play((success) => {
         if (success) {
           console.log('successfully finished playing')
-          // audioItem.setState({playing: false})
           audiolist.setState({
             playing: false,
             duration: -1
           })
         } else {
           console.log('playback failed due to audio decoding errorssss')
-          // audioItem.setState({playing: false})
           audiolist.setState({
             playing: false,
             duration: -1

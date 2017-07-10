@@ -23,10 +23,6 @@ export default class AudioListItem extends React.Component {
     this.animatedHeightValue = new Animated.Value(45)
   }
 
-  componentDidMount () {
-    audioListItem = this
-  }
-
   onAnotherItemPress () {
     Animated.timing(this.animatedHeightValue, {
       toValue: 45,
@@ -39,7 +35,7 @@ export default class AudioListItem extends React.Component {
       toValue: 100,
       duration: 300
     }).start()
-    this.props.onClick(this)
+    this.props.onItemClick(this)
   }
 
   async playAudio (audioPath, audioItem) {

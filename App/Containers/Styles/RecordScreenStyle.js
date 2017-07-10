@@ -3,6 +3,8 @@
 import { StyleSheet } from 'react-native'
 import { Metrics, Colors } from '../../Themes/'
 
+const RECORD_CONTROLS_HEIGHT = 440
+
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -10,13 +12,12 @@ export default StyleSheet.create({
     height: Metrics.screenHeight
   },
   controls: {
-    justifyContent: 'center',
-    height: Metrics.screenHeight / 1.5,
-    alignItems: 'center',
-    flex: 1
+    paddingTop: (Metrics.screenHeight - RECORD_CONTROLS_HEIGHT) / 2,
+    height: Metrics.screenHeight,
+    width: Metrics.screenWidth,
+    alignItems: 'center'
   },
   progressText: {
-    paddingTop: 50,
     fontSize: 50,
     color: '#fff'
   },
@@ -27,33 +28,11 @@ export default StyleSheet.create({
     fontSize: 20,
     color: '#B81F00'
   },
-  recordContainer: {
-    alignSelf: 'stretch',
-    height: Metrics.screenHeight / 2,
-    alignItems: 'center'
-  },
-  outterRecordCircle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 10,
-    height: Metrics.screenWidth / 5 * 2,
-    width: Metrics.screenWidth / 5 * 2
-    // borderRadius: 170, //Half of the animated final value
-  },
-  innerRecordCircle: {
-    height: Metrics.screenWidth / 5 * 2,
-    width: Metrics.screenWidth / 5 * 2,
-    borderRadius: Metrics.screenWidth / 5 * 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#bdc3c7',
-    opacity: 0.9
-  },
   button: {
     alignSelf: 'center',
     margin: 5,
     height: 45,
-    width: Metrics.screenWidth / 2,
+    width: 200,
     backgroundColor: Colors.darkRicePaper,
     borderRadius: 23
   },
@@ -79,7 +58,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     margin: 5,
     height: 45,
-    width: Metrics.screenWidth / 2,
+    width: 200,
     backgroundColor: Colors.seaweed,
     borderRadius: 23
   }

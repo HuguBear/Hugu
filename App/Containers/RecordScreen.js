@@ -1,4 +1,6 @@
 /* eslint-disable react/jsx-boolean-value */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import React, {Component} from 'react'
 import * as Progress from '../Progress'
 
@@ -17,6 +19,7 @@ import {AudioRecorder, AudioUtils} from 'react-native-audio'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RNFS from 'react-native-fs'
 import I18n from 'react-native-i18n'
+import _ from 'lodash'
 
 import { connect } from 'react-redux'
 import RecordActions from '../Redux/RecordRedux'
@@ -27,6 +30,7 @@ import styles from './Styles/RecordScreenStyle'
 class RecordScreen extends Component {
   constructor (props) {
     super(props)
+    let sound
     this.state = {
       currentTime: 0.0,
       recording: false,
@@ -38,6 +42,8 @@ class RecordScreen extends Component {
       hasPermission: undefined,
       bearModalVisible: false
     }
+
+    this.centerButton = _.throttle(this.centerButton.bind(this), 500, {leading: true, trailing: false})
   }
 
   prepareRecordingPath (audioPath) {
@@ -148,25 +154,17 @@ class RecordScreen extends Component {
   }
 
   async _play () {
-    console.log(this.state.audioPath)
-
-    if (this.state.recording) {
-      await this._stop()
-    }
+    if (this.state.recording) { await this._stop() }
     if (this.state.playing) {
-      return
+      this.setState({ playing: false, duration: -1 })
+      return sound.stop()
     }
-    const sound = new Sound(this.state.audioPath, '', (error) => {
+    sound = new Sound(this.state.audioPath, '', (error) => {
       if (error) {
         console.log('failed to load the sound', error)
         return
       }
-      // loaded successfully
-      console.log('duration in seconds: ' + sound.getDuration() + ' number of channels: ' + sound.getNumberOfChannels())
-      this.setState({
-        playing: true,
-        duration: sound.getDuration() * 1000 + 150
-      })
+      this.setState({ playing: true, duration: sound.getDuration() * 1000 })
       sound.play((success) => {
         if (success) {
           console.log('successfully finished playing')
@@ -175,11 +173,13 @@ class RecordScreen extends Component {
             duration: -1
           })
         } else {
-          console.log('playback failed due to audio decoding errorssss')
+          console.log('playback failed due to audio decoding errors')
+          sound.release()
           this.setState({
             playing: false,
             duration: -1
           })
+          this._play()
         }
       })
     })
@@ -224,6 +224,9 @@ class RecordScreen extends Component {
   }
 
   refresh () {
+    if (this.state.playing) {
+      this._play()
+    }
     this.setState({
       recording: false,
       finished: false,
@@ -239,7 +242,18 @@ class RecordScreen extends Component {
   }
 
   setBearModalVisible (visible) {
+    if (this.state.playing) {
+      this._play()
+    }
     this.setState({bearModalVisible: visible})
+  }
+
+  centerButton () {
+    if (this.state.finished && this.props.lastRecordedFilePath !== null) {
+      this._play()
+    } else {
+      this._record()
+    }
   }
 
   render () {
@@ -250,15 +264,12 @@ class RecordScreen extends Component {
             <Text style={styles.progressText}>{this.state.currentTime}</Text>
             <Progress.Circle
               progress={1}
-              size={170}
-              thickness={14}
               indeterminate={this.state.recording}
-              color={'gray'}
               duration={this.state.duration}
               recording={this.state.recording}
               recorded={this.state.finished && this.props.lastRecordedFilePath !== null}
               unfilledColor={'rgba(255, 255, 255, 0.60)'}
-              onClick={() => { (this.state.finished === true && this.props.lastRecordedFilePath !== null ? this._play() : this._record()) }}
+              onClick={this.centerButton}
               />
             {(this.state.finished && !this.state.recording && this.props.lastRecordedFilePath !== null) &&
               <View>

@@ -34,7 +34,7 @@ export default StyleSheet.create({
   },
   modalTextInput: {
     height: 40,
-    width: 200,
+    width: Metrics.screenWidth / 1.6,
     margin: 15,
     alignSelf: 'center',
     textAlign: 'center'
@@ -71,7 +71,7 @@ export default StyleSheet.create({
   bearKey: {
     position: 'absolute',
     top: 38,
-    left: 83,
+    left: Metrics.screenWidth / 3.8,
     borderColor: 'black',
     borderWidth: 2,
     borderBottomLeftRadius: 10,
