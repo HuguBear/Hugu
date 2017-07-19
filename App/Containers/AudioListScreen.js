@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/jsx-boolean-value */
+/* eslint-disable eqeqeq */
 import React from 'react'
 import { View, ListView, ToastAndroid, Text, Modal, TextInput } from 'react-native'
 import { connect } from 'react-redux'
@@ -46,7 +47,7 @@ class AudioListScreen extends React.Component {
     this.setAudioModalVisible = this.setAudioModalVisible.bind(this)
   }
 
-  renderRow (rowData) {
+  renderRow (rowData, sectionID, rowID) {
     return (
       <AudioListItem
         audio={rowData}
@@ -55,6 +56,8 @@ class AudioListScreen extends React.Component {
         setBearModalVisible={audiolist.setBearModalVisible}
         deleteAudio={audiolist.props.deleteAudio}
         playAudio={audiolist.playAudio}
+        rowKey={rowID}
+
       />
     )
   }
@@ -153,6 +156,7 @@ class AudioListScreen extends React.Component {
       <View style={styles.container}>
         {this.renderHeader()}
         <ListView
+          ref='scrollView'
           style={{marginBottom: 40, paddingBottom: 20}}
           keyboardShouldPersistTaps='always'
           contentContainerStyle={styles.listContent}
@@ -197,6 +201,7 @@ class AudioListScreen extends React.Component {
   }
 
   _onItemClick (item) {
+    // console.warn(audiolist.refs.scrollView.scrollProperties.offset);
     if (focusedItem != null) {
       focusedItem.onAnotherItemPress()
       focusedItem.setState({
@@ -216,40 +221,19 @@ class AudioListScreen extends React.Component {
           borderBottomRightRadius: 0
         }
       })
+      /* Scrolling littlebit down if it is last item and extraButtons are hidden
+       from screen.
+       1. IF    the listItem clicked is the last one in visible screen.
+       2. THEN  scroll 55 more pixels so that extraButtons are shown.
+      */
+      if (focusedItem.props.rowKey == Math.round((audiolist.refs.scrollView.scrollProperties.visibleLength - 70 + audiolist.refs.scrollView.scrollProperties.offset) / 55)) {
+        audiolist.refs.scrollView.scrollTo({x: 0, y: (focusedItem.props.rowKey - Math.round(audiolist.refs.scrollView.scrollProperties.visibleLength / 55 - 2)) * 55, animated: true})
+      }
     }
   }
 
   _getAudioFromLocal (data) {
-    this.setState({
-      audioDataSource: this.state.audioDataSource.cloneWithRows(data)
-    })
-    // DO NOT DELETE THIS
-    // DO NOT DELETE THIS
-    // DO NOT DELETE THIS
-    // DO NOT DELETE THIS
-    //   RNFS.exists(RNFS.DocumentDirectoryPath + '/audio')
-    //     .then(exists => {
-    //       if (exists) {
-    //         RNFS.readDir(RNFS.DocumentDirectoryPath + '/audio').then(files => {
-    //           let data = files.slice()
-    //           // AS NOW MOST OF FUNCTIONALITY GOES THRU THE REDUX, BUT WE STILL
-    //           // NEED TO CHECK IF FILES FROM RNFS ARE THE SAME AS IN REDUX
-    //           // // for (i = 0; i < data.length; i++) {
-    //           // //     if (data[i].path !== this.props.audioFiles[i].audio.filePath) {
-    //           // //       console.log('omg');
-    //           // //     }
-    //           // // }
-    //           // console.log(data[0].path);
-    //           // console.log(this.props.audioFiles[0].audio.filePath);
-    //           this.setState({
-    //             audioDataSource: this.state.audioDataSource.cloneWithRows(data)
-    //           })
-    //         }).catch(err => console.log(err))
-    //       } else { // If directory doesn't exist yet
-    //         RNFS.mkdir(RNFS.DocumentDirectoryPath + '/audio')
-    //       }
-    //     }
-    //   ).catch(err => console.log(err))
+    this.setState({ audioDataSource: this.state.audioDataSource.cloneWithRows(data) })
   }
 }
 
