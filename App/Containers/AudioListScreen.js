@@ -40,7 +40,8 @@ class AudioListScreen extends React.Component {
       modalAudioName: '',
       audio: null,
       startup: true,
-      playing: false
+      playing: false,
+      scrollBack: null
     }
 
     this.setBearModalVisible = this.setBearModalVisible.bind(this)
@@ -132,7 +133,6 @@ class AudioListScreen extends React.Component {
         playing: true
       })
       console.log(audiolist.state.duration)
-      console.log('lslslslssll')
       sound.play((success) => {
         if (success) {
           console.log('successfully finished playing')
@@ -213,6 +213,10 @@ class AudioListScreen extends React.Component {
     }
     if (focusedItem === item) {
       focusedItem = null
+      if (audiolist.state.scrollBack) {
+        audiolist.refs.scrollView.scrollTo({x: 0, y: audiolist.state.scrollBack, animated: true})
+        audiolist.setState({scrollBack: null})
+      }
     } else {
       focusedItem = item
       focusedItem.setState({
@@ -225,9 +229,14 @@ class AudioListScreen extends React.Component {
        from screen.
        1. IF    the listItem clicked is the last one in visible screen.
        2. THEN  scroll 55 more pixels so that extraButtons are shown.
+       audiolist.refs.scrollView.scrollProperties.visibleLength + audiolist.refs.scrollView.scrollProperties.offset < focusedItem.props.rowKey * 55 + 52
+       if (focusedItem.props.rowKey == Math.round((audiolist.refs.scrollView.scrollProperties.visibleLength - 70 + audiolist.refs.scrollView.scrollProperties.offset) / 55)) {
+         audiolist.refs.scrollView.scrollTo({x: 0, y: (focusedItem.props.rowKey - Math.round(audiolist.refs.scrollView.scrollProperties.visibleLength / 55 - 2)) * 55, animated: true})
+       }
       */
-      if (focusedItem.props.rowKey == Math.round((audiolist.refs.scrollView.scrollProperties.visibleLength - 70 + audiolist.refs.scrollView.scrollProperties.offset) / 55)) {
-        audiolist.refs.scrollView.scrollTo({x: 0, y: (focusedItem.props.rowKey - Math.round(audiolist.refs.scrollView.scrollProperties.visibleLength / 55 - 2)) * 55, animated: true})
+      if (audiolist.refs.scrollView.scrollProperties.visibleLength + audiolist.refs.scrollView.scrollProperties.offset < focusedItem.props.rowKey * 55 + 115) {
+        audiolist.setState({scrollBack: audiolist.refs.scrollView.scrollProperties.offset})
+        audiolist.refs.scrollView.scrollTo({x: 0, y: audiolist.refs.scrollView.scrollProperties.offset + Math.abs((audiolist.refs.scrollView.scrollProperties.visibleLength + audiolist.refs.scrollView.scrollProperties.offset) - (focusedItem.props.rowKey * 55 + 115)), animated: true})
       }
     }
   }

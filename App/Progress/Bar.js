@@ -81,20 +81,20 @@ export default class ProgressBar extends Component {
       ...restProps
     } = this.props
 
-    const innerWidth = Math.max(0, 280 || this.state.width) - (borderWidth * 2)
+    const innerWidth = Math.max(0, 292 || this.state.width) - (borderWidth * 2)
     const containerStyle = {
-      width: 280,
+      width: 292,
       position: 'absolute',
-      height: 50,
+      height: 45,
       overflow: 'hidden'
     }
     const progressStyle = {
       backgroundColor: 'rgba(48, 104, 68, 0.5)',
-      height: 50,
+      height: 45,
       transform: [{
         translateX: this.state.progress.interpolate({
           inputRange: [0, 1],
-          outputRange: [innerWidth / -2, 0]
+          outputRange: [innerWidth / -1.95, 0]
         })
       }, {
         // Interpolation a temp workaround for https://github.com/facebook/react-native/issues/6278

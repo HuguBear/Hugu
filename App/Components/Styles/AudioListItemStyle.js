@@ -14,6 +14,7 @@ export default StyleSheet.create({
   audioRow: {
     position: 'absolute',
     width: Metrics.screenWidth / 1.285,
+    height: 45,
     top: 0,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -50,10 +51,8 @@ export default StyleSheet.create({
   },
   audioName: {
     fontSize: 18,
-    fontFamily: 'arial',
-    alignSelf: 'flex-end',
-    textAlign: 'left',
-    width: Metrics.screenWidth - 70
+    flexDirection: 'row',
+    flex: 1
   },
   audioStatus: {
     flexDirection: 'row',

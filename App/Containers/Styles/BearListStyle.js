@@ -88,6 +88,7 @@ export default StyleSheet.create({
     width: Metrics.screenWidth / 1.55
   },
   trashButton: {
+    height: 37,
     padding: 7,
     alignSelf: 'flex-end',
     borderLeftWidth: 2
