@@ -17,18 +17,22 @@ const { Types, Creators } = createActions({
   testSagaFailure: ['testSagaFailureInput'],
   testSagaSuccess: ['testSagaSuccessInput'],
   addBearRequest: ['bear'],
-  connectBearRequest: ['index'],
-  deleteBearRequest: ['indexes']
+  connectBearRequest: ['ssid', 'password', 'index'],
+  connectBearUnsuccessful: null,
+  connectBearSuccessful: ['bear_key', 'index'],
+  deleteBearRequest: ['indexes'],
 })
 
-export const RecordTypes = Types
+export const BearTypes = Types
 export default Creators
 
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
   results: LIST_DATA,
-  requesting: false
+  requesting: false,
+  didConnect: false,  //vai izdevās lāci pievienot
+  isConnecting: false, //vai pašlaik pievieno lāci? (gaida atbildi)
 })
 
 /* ------------- Reducers ------------- */
@@ -55,17 +59,24 @@ export const addBearRequest = (state: Object, { bear }: Object) => {
   return state.merge({ results })
 }
 
-export const connectBearRequest = (state: Object, { index }: Object) => {
-  const bear = state.results.unconnected[index]
-  const results = {
-    connected: [ ...state.results.connected, bear ],
-    unconnected: [
-      ...state.results.unconnected.slice(0, Number(index)),
-      ...state.results.unconnected.slice(Number(index) + 1, state.results.unconnected.length)
-    ]
-  }
-  return state.merge({ results })
+export const connectBearRequest = (state: Object, parameters) => { //{ index }: Object
+  return state.merge({
+    didConnect: false,
+    isConnecting: true,
+  });
 }
+
+// export const connectBearRequest = (state: Object, { index }: Object) => {
+//   const bear = state.results.unconnected[index]
+//   const results = {
+//     connected: [ ...state.results.connected, bear ],
+//     unconnected: [
+//       ...state.results.unconnected.slice(0, Number(index)),
+//       ...state.results.unconnected.slice(Number(index) + 1, state.results.unconnected.length)
+//     ]
+//   }
+//   return state.merge({ results })
+// }
 
 export const deleteBearRequest = (state: Object, { indexes }: Object) => {
   const { rowID, sectionID } = indexes
@@ -97,6 +108,32 @@ export const deleteBearRequest = (state: Object, { indexes }: Object) => {
   return state.merge({ results })
 }
 
+export const connectBearSuccessful = ( state: Object, action: Object ) => {
+  let index = action.index;
+  const bear = state.results.unconnected[index]
+    const results = {
+      connected: [ ...state.results.connected, bear ],
+      unconnected: [
+        ...state.results.unconnected.slice(0, Number(index)),
+        ...state.results.unconnected.slice(Number(index) + 1, state.results.unconnected.length)
+      ]
+    }
+
+    return state.merge({
+      didConnect: true,
+      isConnecting: false,
+      bearKey: action.bear_key,
+      results
+    });
+}
+
+export const connectBearUnsuccessful = ( state: Object ) => {
+    return state.merge({
+      didConnect: false,
+      isConnecting: false,
+    });
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -105,5 +142,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.TEST_SAGA_SUCCESS]: testSagaSuccess,
   [Types.ADD_BEAR_REQUEST]: addBearRequest,
   [Types.CONNECT_BEAR_REQUEST]: connectBearRequest,
+  [Types.CONNECT_BEAR_UNSUCCESSFUL]: connectBearUnsuccessful,
+  [Types.CONNECT_BEAR_SUCCESSFUL]: connectBearSuccessful,
   [Types.DELETE_BEAR_REQUEST]: deleteBearRequest
 })
