@@ -2,6 +2,7 @@ package com.huguapp;
 
 import android.app.Application;
 
+import com.skierkowski.WifiManager.*;
 import com.facebook.react.ReactApplication;
 import com.rnim.rn.audio.ReactNativeAudioPackage;
 import com.zmxv.RNSound.RNSoundPackage;
@@ -31,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new WifiManager(),
             new ReactNativeAudioPackage(),
             new RNSoundPackage(),
             new ReactNativeI18n(),
