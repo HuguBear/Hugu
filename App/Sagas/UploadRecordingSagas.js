@@ -43,19 +43,26 @@ export function * getUploadRecording (action) {
     bear_key: bearKey
   }
 
-  const response = yield call(promisifiedFn, settings)
-  if (typeof (response) === 'undefined') {
-    yield put(RecordActions.uploadFailure('No response'))
-    return
-  }
+  try {
+    const response = yield call(promisifiedFn, settings)
 
-  if (response.headers.uploadstatus === 'OK') {
-    yield put(RecordActions.uploadSuccess(filePath))
-  } else {
-    if (response.data) {
-      yield put(RecordActions.uploadFailure({error: response.data, filePath: filePath}))
-    } else {
-      yield put(RecordActions.uploadFailure({error: response, filePath: filePath}))
+    if (typeof (response) === 'undefined') {
+      yield put(RecordActions.uploadFailure('No response'))
+      return
     }
+    if (response.headers.uploadstatus === 'OK') {
+      console.log(response.data);
+      yield put(RecordActions.uploadSuccess(filePath, response.data, bearKey))
+    } else {
+      if (response.data) {
+        yield put(RecordActions.uploadFailure({error: response.data, filePath: filePath}))
+      } else {
+        yield put(RecordActions.uploadFailure({error: response, filePath: filePath}))
+      }
+    }
+
+  }
+  catch(error) {
+    yield put(RecordActions.uploadFailure('No response'))
   }
 }

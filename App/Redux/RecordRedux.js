@@ -22,8 +22,11 @@ const { Types, Creators } = createActions({
   renameAudio: ['bundle'],
   deleteAudio: ['filePath'],
   uploadRequest: ['filePath', 'bearKey'],
-  uploadSuccess: ['filePath'],
-  uploadFailure: ['error']
+  uploadSuccess: ['filePath', 'recordingName', 'bearKey'], //recordingName - server response]
+  uploadFailure: ['error'],
+  refreshAudioRequest: ['audiolistItems'],
+  refreshAudioSuccess: ['data'],
+  refreshAudioFailure: ['error'],
 })
 
 export const RecordTypes = Types
@@ -125,8 +128,17 @@ export const uploadRequest = (state: Object, { filePath }: Object) => {
   })
 }
 
-export const uploadSuccess = (state: Object, { filePath }: Object) => {
-  const audioFiles = state.audioFiles.map(audio => audio.filePath === filePath ? {filePath: audio.filePath, fileName: audio.fileName, isUploading: false, sent: true, received: audio.received, listened: audio.listened} : audio)
+export const uploadSuccess = (state: Object, data) => {
+  const audioFiles = state.audioFiles.map(audio => audio.filePath === data.filePath ? {
+    filePath: audio.filePath,
+    fileName: audio.fileName,
+    isUploading: false,
+    sent: true,
+    received: audio.received,
+    listened: audio.listened,
+    recordingName: data.recordingName,
+    // bearKey: data.bearKey
+  } : audio)
   const sendingFromRecordScreen = (state.sendingFromRecordScreen === 1) ? 2 : 0
   return state.merge({
     audioFiles,
@@ -145,6 +157,37 @@ export const uploadFailure = (state, action) => {
   })
 }
 
+export const refreshAudioRequest = (state, props) => {
+  return state;
+}
+
+export const refreshAudioSuccess = (state, props) => {
+  // console.log(props.data);
+  // console.log(state.audioFiles);
+  let audioFiles;
+  for (var i = 0; i < props.data.length; i++) { //foreach item in server's response
+    audioFiles = state.audioFiles.map(audio => audio.recordingName === props.data[i].name ? {
+      filePath: audio.filePath,
+      fileName: audio.fileName,
+      isUploading: false,
+      sent: audio.sent,
+      received: Boolean(Number(props.data[i].received)),
+      listened: Boolean(Number(props.data[i].listened)),
+      recordingName: audio.recordingName,
+      // bearKey: data.bearKey
+    } : audio)
+  }
+  console.log(audioFiles);
+  return state.merge({
+    audioFiles,
+  })
+}
+
+export const refreshAudioFailure = (state, error) => {
+  console.log(errorprops);
+  return state;
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -155,5 +198,8 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.DELETE_AUDIO]: deleteAudio,
   [Types.UPLOAD_REQUEST]: uploadRequest,
   [Types.UPLOAD_SUCCESS]: uploadSuccess,
-  [Types.UPLOAD_FAILURE]: uploadFailure
+  [Types.UPLOAD_FAILURE]: uploadFailure,
+  [Types.REFRESH_AUDIO_REQUEST]: refreshAudioRequest,
+  [Types.REFRESH_AUDIO_SUCCESS]: refreshAudioSuccess,
+  [Types.REFRESH_AUDIO_FAILURE]: refreshAudioFailure,
 })

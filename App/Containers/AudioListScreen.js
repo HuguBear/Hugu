@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable eqeqeq */
 import React from 'react'
-import { View, ListView, ToastAndroid, Text, Modal, TextInput } from 'react-native'
+import { View, ListView, ToastAndroid, Text, Modal, TextInput, AppState } from 'react-native'
 import { connect } from 'react-redux'
 
 import AlertMessage from '../Components/AlertMessage'
@@ -41,14 +41,19 @@ class AudioListScreen extends React.Component {
       audio: null,
       startup: true,
       playing: false,
-      scrollBack: null
+      scrollBack: null,
+      appState: AppState.currentState
     }
-
     this.setBearModalVisible = this.setBearModalVisible.bind(this)
     this.setAudioModalVisible = this.setAudioModalVisible.bind(this)
-  }
+    this.audioStatusTimeout;
+    this.audioStatusRefreshInterval = 30*1000;
+    //Refreshes audiolist items status, each n seconds
+
+}
 
   renderRow (rowData, sectionID, rowID) {
+    // console.log(rowData);
     return (
       <AudioListItem
         audio={rowData}
@@ -65,6 +70,32 @@ class AudioListScreen extends React.Component {
   componentWillMount () {
     audiolist._getAudioFromLocal(this.props.audioFiles)
   }
+
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+    this.audioStatusTimeout = setTimeout(this.refreshAudioItemsStatus, this.audioStatusRefreshInterval, this);
+  }
+
+  refreshAudioItemsStatus(container) {
+    // console.log("--------------------------------!!!!!!!!!!!!!!!!!!-------------------------");
+    // console.log("refreshAudioItemsStatus()");
+    // console.log(container.props.audioFiles);
+    container.props.audioStatusRefreshRequest(container.props.audioFiles);
+    container.audioStatusTimeout = setTimeout(container.refreshAudioItemsStatus, container.audioStatusRefreshInterval, container);
+  }
+
+  _handleAppStateChange = (nextAppState) => {
+   if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+     console.log('App has come to the foreground!')
+    //  console.log(this.props.audioFiles);
+    //  this.props.audioStatusRefreshRequest(this.props.audioFiles);
+    //  this.audioStatusTimeout = setTimeout(this.props.audioStatusRefreshRequest, this.audioStatusRefreshInterval, this.props.audioFiles)
+     return;
+   }
+
+   //FN that refreshes status
+   this.setState({appState: nextAppState});
+ }
 
   componentWillReceiveProps (newProps) {
     if (newProps.error === 'SUCCESSFUL' && !this.state.startup && newProps.error !== this.props.error) {
@@ -259,7 +290,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     uploadRequest: (filePath, bearKey) => dispatch(RecordActions.uploadRequest(filePath, bearKey)),
     deleteAudio: (filePath) => dispatch(RecordActions.deleteAudio(filePath)),
-    renameAudio: (bundle) => dispatch(RecordActions.renameAudio(bundle))
+    renameAudio: (bundle) => dispatch(RecordActions.renameAudio(bundle)),
+    audioStatusRefreshRequest: (audiolistItems) => dispatch(RecordActions.refreshAudioRequest(audiolistItems)),
   }
 }
 

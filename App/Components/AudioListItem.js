@@ -73,22 +73,64 @@ export default class AudioListItem extends React.Component {
     })
   }
 
+  getStatusIcon(audio) {
+    // console.log("GET STATUS ICON");
+    // console.log(audio);
+    if (!audio.sent) {
+      return (<View style={styles.audioStatus}>
+        <IonIcon name='md-alert' color='#d35400' size={25} />
+        <Text style={[styles.audioStatusText, {color: '#d35400'}]}>
+          {I18n.t('notSent')}
+        </Text>
+      </View>);
+    }
+    else if (audio.listened) {
+      // console.log("LISTENED");
+      return (<View style={styles.audioStatus}>
+        <IonIcon name='md-headset' color='green' size={25} />
+        <Text style={[styles.audioStatusText, {color: 'green'}]}>
+          {I18n.t('listened')}
+        </Text>
+      </View>);
+    }
+    else if (audio.received) {
+      // console.log("RECEIVED");
+      return (<View style={styles.audioStatus}>
+        <IonIcon name='md-paw' color='green' size={25} />
+        <Text style={[styles.audioStatusText, {color: 'green'}]}>
+          {I18n.t('received')}
+        </Text>
+      </View>);
+    }
+    else if (audio.sent) {
+      // console.log("SENT");
+      return (<View style={styles.audioStatus}>
+        <IonIcon name='md-return-right' color='green' size={25} />
+        <Text style={[styles.audioStatusText, {color: 'green'}]}>
+          {I18n.t('sent')}
+        </Text>
+      </View>);
+    }
+  }
+
   render () {
     const animatedHeightStyle = { height: this.animatedHeightValue }
 
-    let statusIcon = (this.props.audio.sent)
-    ? (<View style={styles.audioStatus}>
-      <IonIcon name='md-paw' color='green' size={25} />
-      <Text style={[styles.audioStatusText, {color: 'green'}]}>
-        {I18n.t('sent')}
-      </Text>
-    </View>)
-    : (<View style={styles.audioStatus}>
-      <IonIcon name='md-alert' color='#d35400' size={25} />
-      <Text style={[styles.audioStatusText, {color: '#d35400'}]}>
-        {I18n.t('notSent')}
-      </Text>
-    </View>)
+    let statusIcon = this.getStatusIcon(this.props.audio);
+    // console.log(statusIcon);
+    // let statusIcon = (this.props.audio.sent)
+    // ? (<View style={styles.audioStatus}>
+    //   <IonIcon name='md-paw' color='green' size={25} />
+    //   <Text style={[styles.audioStatusText, {color: 'green'}]}>
+    //     {I18n.t('sent')}
+    //   </Text>
+    // </View>)
+    // : (<View style={styles.audioStatus}>
+    //   <IonIcon name='md-alert' color='#d35400' size={25} />
+    //   <Text style={[styles.audioStatusText, {color: '#d35400'}]}>
+    //     {I18n.t('notSent')}
+    //   </Text>
+    // </View>)
 
     let sendContent = (this.props.audio.isUploading)
     ? <ActivityIndicator animating={true} style={styles.additionalButtons} color={'rgba(255,255,255, 0.75)'} size='large' />
