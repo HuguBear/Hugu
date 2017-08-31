@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 import RootContainer from './RootContainer'
 import createStore from '../Redux'
+import codePush from 'react-native-code-push'
 
 // create our store
 const store = createStore()
@@ -26,4 +27,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default codePush(App)

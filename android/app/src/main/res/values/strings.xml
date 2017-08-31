@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">HuguApp</string>
+  <string name="app_name">HuguApp</string>
+  <string name="reactNativeCodePush_androidDeploymentKey">sPDqdTt9xfk7a1havIUZ34YhbJAm3458d86c-bc4d-49e9-bc51-7b49e2bfa1d6</string>
 </resources>

@@ -262,6 +262,7 @@ class RecordScreen extends Component {
         <Image source={Images.huguWriter} style={styles.container} resizeMode='stretch'>
           <View style={styles.controls}>
             <Text style={styles.progressText}>{this.state.currentTime}</Text>
+            <Text style={styles.progressText}>CodePush</Text>
             <Progress.Circle
               progress={1}
               indeterminate={this.state.recording}
