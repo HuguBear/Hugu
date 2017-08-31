@@ -2,6 +2,7 @@ package com.huguapp;
 
 import android.app.Application;
 
+import com.skierkowski.WifiManager.*;
 import com.facebook.react.ReactApplication;
 import com.microsoft.codepush.react.CodePush;
 import com.rnim.rn.audio.ReactNativeAudioPackage;
@@ -39,6 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new CodePush(getResources().getString(R.string.reactNativeCodePush_androidDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
+            new WifiManager(),
             new ReactNativeAudioPackage(),
             new RNSoundPackage(),
             new ReactNativeI18n(),

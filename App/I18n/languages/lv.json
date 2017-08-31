@@ -11,7 +11,9 @@
    "bearName": "Lacha Vards",
    "bearKey": "Lacha Atsklega",
    "chooseBear": "Izvelaties laaci!",
+   "choose": "Izvēlēties",
    "cancel": "atcelt",
+   "continue": "Tālāk",
    "notSent": "Nav Nosutits",
    "audioRecordings": "Audio Ieraksti",
    "noRecordings": "Te pagaidam neka nav, ierakstiet audio un nakat atpakal!",
@@ -26,5 +28,7 @@
    "september": "Septembris",
    "october": "Octobris",
    "november": "Novembris",
-   "december": "Decembris"
+   "december": "Decembris",
+   "received": "Saņemts",
+   "listened": "Noklausīts",
 }

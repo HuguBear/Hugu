@@ -136,6 +136,7 @@ android {
 }
 
 dependencies {
+    compile project(':WifiManager')
     compile project(':react-native-audio')
     compile project(':react-native-sound')
     compile project(':react-native-fs')

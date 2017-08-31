@@ -92,5 +92,59 @@ export default StyleSheet.create({
     padding: 7,
     alignSelf: 'flex-end',
     borderLeftWidth: 2
+  },
+  wifiModalBackground: {
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(158, 158, 158, 0.8)',
+    justifyContent: 'center'
+  },
+  wifiModalContainer: {
+    width: Metrics.screenWidth - 80,
+    alignSelf: 'center',
+    backgroundColor: Colors.steel,
+    borderRadius: 10
+  },
+  wifiModalHeader: {
+    height: Metrics.screenHeight * 0.08,
+    flexDirection: 'column',
+    justifyContent: 'center'
+  },
+  wifiModalHeaderText: {
+    fontSize: 20,
+    alignSelf: 'center',
+    color: 'black',
+    fontWeight: '500'
+  },
+  wifiRow: {
+    height: 50,
+    paddingLeft: 10,
+    alignSelf: 'stretch',
+    backgroundColor: '#fff',
+    // borderBottomWidth: 1,
+    borderBottomColor: Colors.steel,
+    justifyContent: 'center'
+  },
+  rowSelected: {
+    backgroundColor: '#34495e'
+  },
+  rowSelectedText: {
+    color: '#fff'
+  },
+  wifiModalFooter: {
+    paddingHorizontal: 10
+  },
+  wifiModalFooterText: {
+    fontStyle: 'italic',
+    textAlign: 'justify'
+  },
+  wifiPasswordInputField: {
+    // borderLeftWidth: 5,
+    // borderLeftColor: '#fff',
+    // borderRightWidth: 5,
+    // borderRightColor: '#fff',
+    paddingHorizontal: 10,
+    marginHorizontal: 5
   }
+
 })
