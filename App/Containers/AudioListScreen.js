@@ -272,7 +272,9 @@ class AudioListScreen extends React.Component {
   }
 
   _getAudioFromLocal (data) {
-    this.setState({ audioDataSource: this.state.audioDataSource.cloneWithRows(data) })
+    if (data) {
+      this.setState({ audioDataSource: this.state.audioDataSource.cloneWithRows(data) })
+    }
   }
 }
 

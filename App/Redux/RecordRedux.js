@@ -55,14 +55,26 @@ export const recordStart = (state: Object) => {
 }
 
 export const recordSuccess = (state: Object, { filePath }: Object) => {
-  const audioFiles = [ ...state.audioFiles, {
-    filePath: filePath,
-    fileName: filePath.split('audio/')[1].split('.')[0],
-    isUploading: false,
-    sent: false,
-    received: false,
-    listened: false
-  }]
+  let audioFiles
+  if (state.audioFiles) {
+    audioFiles = [ ...state.audioFiles, {
+      filePath: filePath,
+      fileName: filePath.split('audio/')[1].split('.')[0],
+      isUploading: false,
+      sent: false,
+      received: false,
+      listened: false
+    }]
+  } else {
+    audioFiles = [{
+      filePath: filePath,
+      fileName: filePath.split('audio/')[1].split('.')[0],
+      isUploading: false,
+      sent: false,
+      received: false,
+      listened: false
+    }]
+  }
   return state.merge({
     audioFiles,
     isRecording: false,
@@ -164,9 +176,9 @@ export const refreshAudioRequest = (state, props) => {
 export const refreshAudioSuccess = (state, props) => {
   // console.log(props.data);
   // console.log(state.audioFiles);
-  let audioFiles
+  let audioFiles = state.audioFiles
   for (var i = 0; i < props.data.length; i++) { // foreach item in server's response
-    audioFiles = state.audioFiles.map(audio => audio.recordingName === props.data[i].name ? {
+    audioFiles = audioFiles.map(audio => audio.recordingName === props.data[i].name ? {
       filePath: audio.filePath,
       fileName: audio.fileName,
       isUploading: false,
@@ -177,14 +189,15 @@ export const refreshAudioSuccess = (state, props) => {
       // bearKey: data.bearKey
     } : audio)
   }
-  console.log(audioFiles)
   return state.merge({
     audioFiles
   })
 }
 
 export const refreshAudioFailure = (state, error) => {
-  return state
+  return state.merge({
+    error: 'error'
+  })
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
