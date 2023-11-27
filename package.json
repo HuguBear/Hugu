@@ -40,7 +40,7 @@
     "react-native-device-info": "0.10.2",
     "react-native-fs": "^2.3.2",
     "react-native-i18n": "1.0.0",
-    "react-native-router-flux": "3.38.0",
+    "react-native-router-flux": "4.0.0",
     "react-native-sound": "^0.10.1",
     "react-native-swiper": "^1.5.4",
     "react-native-vector-icons": "4.1.1",
@@ -49,7 +49,7 @@
     "redux": "3.6.0",
     "redux-persist": "4.6.0",
     "redux-saga": "0.14.6",
-    "reduxsauce": "0.4.1",
+    "reduxsauce": "1.1.1",
     "seamless-immutable": "7.1.2"
   },
   "devDependencies": {
